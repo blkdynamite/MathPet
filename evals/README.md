@@ -5,9 +5,10 @@
 ## Run
 
 ```bash
-npm run test:verify   # unit tests for lib/verify.ts (21 checks, offline)
-npm run eval          # scores all fallback scaffolds; adds live pass if
-                      # ANTHROPIC_API_KEY is set
+npm run test:verify     # unit tests for lib/verify.ts and lib/generate.ts (59 checks, offline)
+npm run eval:scaffold   # scores all fallback scaffolds; live pass if ANTHROPIC_API_KEY is set
+npm run eval:generate   # scores 200 deterministic specs offline; 90 live tool-use stories if key
+npm run eval            # runs both eval:scaffold and eval:generate
 ```
 
 Latest run is committed at `evals/results.json`.

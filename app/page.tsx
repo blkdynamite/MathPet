@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PROBLEMS, DEMO_ORDER, getProblemById } from "@/lib/problems";
-import { Scaffold, Session } from "@/lib/types";
+import { Scaffold, Session, Problem } from "@/lib/types";
 import { getItem } from "@/lib/shop";
 import {
   SKILLS,
@@ -88,6 +88,10 @@ export default function Home() {
   const [nudge, setNudge] = useState<NudgeReason | null>(null);
   const [hungerOverride, setHungerOverride] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [aiMode, setAiMode] = useState(false);
+  const [aiProblem, setAiProblem] = useState<Problem | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSource, setAiSource] = useState<"live" | "template" | null>(null);
 
   // per-problem attempt tracking
   const startedAt = useRef<number>(Date.now());
@@ -107,6 +111,7 @@ export default function Home() {
         localStorage.removeItem(LS_KEY);
         setState(null);
       }
+      if (q.get("ai") === "1") setAiMode(true);
     }
     const t = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(t);
@@ -116,10 +121,38 @@ export default function Home() {
     if (state) saveState(state);
   }, [state]);
 
-  const currentProblem = useMemo(() => {
+  const staticProblem = useMemo(() => {
     const id = DEMO_ORDER[demoIndex % DEMO_ORDER.length];
     return getProblemById(id) ?? PROBLEMS[0];
   }, [demoIndex]);
+  const currentProblem = aiMode && aiProblem ? aiProblem : staticProblem;
+
+  // In AI mode, fetch a freshly-generated problem for the same skillId as
+  // the demo sequence would have used. Story from the LLM (via tool-use);
+  // verifier already ran server-side and served the safe template if the
+  // model produced a broken story.
+  useEffect(() => {
+    if (!aiMode) return;
+    setAiLoading(true);
+    setAiProblem(null);
+    fetch("/api/generate", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        skillId: staticProblem.skillId,
+        difficulty: staticProblem.difficulty,
+        interests: state?.interests ?? [],
+      }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.problem) {
+          setAiProblem(d.problem);
+          setAiSource(d.source);
+        }
+      })
+      .finally(() => setAiLoading(false));
+  }, [aiMode, demoIndex, staticProblem.skillId, staticProblem.difficulty, state?.interests]);
 
   // reset per-problem trackers when the problem changes
   useEffect(() => {
@@ -284,6 +317,7 @@ export default function Home() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           problemId: currentProblem.id,
+          skillId: currentProblem.skillId,
           originalQuestion: currentProblem.prompt,
           correctAnswer: currentProblem.answer,
           userAnswer,
@@ -350,6 +384,8 @@ export default function Home() {
         onPowers={() => setShowPowers(true)}
         onFeed={() => feedItem("food-cupcake")}
         canFeed={state.coins >= CUPCAKE_COST}
+        aiMode={aiMode}
+        onToggleAi={() => setAiMode((v) => !v)}
       />
 
       <div
@@ -370,8 +406,22 @@ export default function Home() {
         <div className="card text-center py-8 text-gray-500">
           <span className="animate-pulse">{state.name} is thinking of an easier way…</span>
         </div>
+      ) : aiMode && aiLoading ? (
+        <div className="card text-center py-8 text-gray-500">
+          <div className="animate-pulse">🤖 Generating a fresh problem…</div>
+          <div className="text-[10px] text-gray-400 mt-2">
+            code picks the numbers · Claude wraps the story · verifier checks it
+          </div>
+        </div>
       ) : (
-        <QuestionCard key={currentProblem.id} problem={currentProblem} onResult={handleResult} />
+        <>
+          <QuestionCard key={currentProblem.id} problem={currentProblem} onResult={handleResult} />
+          {aiMode && aiSource && (
+            <div className="text-[10px] text-fuchsia-500 text-center -mt-1">
+              🤖 {aiSource === "live" ? "Story generated live and verified" : "LLM story rejected — showing safe template"}
+            </div>
+          )}
+        </>
       )}
 
       <div className="text-[10px] text-gray-400 text-center pt-2">

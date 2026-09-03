@@ -242,6 +242,92 @@ export function verifyScaffold(scaffold: Scaffold, originalAnswer: number): Veri
   return { ok, rungs, rungCounts, reasons, leaksInRung, leaksInBridge, readingOk, readingWorst };
 }
 
+// ---------------------------------------------------------------------------
+// Verify the LLM's story wrapper for a generated problem: the story must
+// contain every operand as its exact digits (in order), must NOT state the
+// answer as a bare number, and must read at grade 3.
+
+export type GenPromptResult = {
+  ok: boolean;
+  reasons: string[];
+  operandsFound: boolean[];
+  operandsInOrder: boolean;
+  answerLeaked: boolean;
+  readingOk: boolean;
+  readingWorst?: ReturnType<typeof readingLevel>;
+};
+
+function digitPositions(text: string, n: number): number[] {
+  const positions: number[] = [];
+  const re = new RegExp(`(^|[^0-9])(${n})(?=[^0-9]|$)`, "g");
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    // index of the number itself, not the preceding boundary
+    positions.push(m.index + m[1].length);
+  }
+  return positions;
+}
+
+export function verifyGeneratedPrompt(
+  prompt: string,
+  operands: number[],
+  answer: number,
+  hint = ""
+): GenPromptResult {
+  const reasons: string[] = [];
+  const p = String(prompt ?? "");
+
+  // Walk left-to-right: for each operand, find the FIRST occurrence that
+  // starts strictly after the previous one. Handles duplicate operands
+  // (e.g. [5, 13, 5]) correctly.
+  const operandsFound = operands.map(() => false);
+  let cursor = -1;
+  operands.forEach((op, i) => {
+    const ps = digitPositions(p, op).filter((pos) => pos > cursor);
+    if (ps.length > 0) {
+      operandsFound[i] = true;
+      cursor = ps[0];
+    }
+  });
+  const allFound = operandsFound.every(Boolean);
+  if (!allFound) {
+    const missing = operands.filter((_, i) => !operandsFound[i]);
+    reasons.push(`missing or out-of-order operand(s): ${missing.join(", ")}`);
+  }
+  const operandsInOrder = allFound;
+
+  // Answer leakage in the prompt. A bare answer digit is a leak UNLESS one
+  // of the operands equals the answer (then that occurrence is allowed).
+  const answerHits = digitPositions(p, answer);
+  const operandOccurrencesEqualToAnswer = operands.filter((op) => op === answer).length;
+  const answerLeaked = answerHits.length > operandOccurrencesEqualToAnswer;
+  if (answerLeaked) reasons.push(`answer ${answer} appears in the prompt as a bare digit`);
+
+  // Also check the hint (kid-facing).
+  const hintAnswerHits = hint ? digitPositions(hint, answer).length : 0;
+  const hintLeaked = hintAnswerHits > 0;
+  if (hintLeaked) reasons.push(`answer ${answer} appears in the hint`);
+
+  // Reading level across prompt + hint.
+  const r1 = readingLevel(p);
+  const r2 = hint ? readingLevel(hint) : { ok: true, longestSentence: 0, longestWord: 0 };
+  const readingOk = r1.ok && r2.ok;
+  const readingWorst =
+    r1.longestSentence + r1.longestWord >= r2.longestSentence + r2.longestWord ? r1 : r2;
+  if (!readingOk) reasons.push("reading level too high for grade 3");
+
+  const ok = allFound && operandsInOrder && !answerLeaked && !hintLeaked && readingOk;
+  return {
+    ok,
+    reasons,
+    operandsFound,
+    operandsInOrder,
+    answerLeaked: answerLeaked || hintLeaked,
+    readingOk,
+    readingWorst,
+  };
+}
+
 // Does the diagnosis at least mention what the misconception is about?
 // Loose keyword check — not a strict test, more of a hint for the eval.
 const MISCON_KEYWORDS: Record<string, string[]> = {

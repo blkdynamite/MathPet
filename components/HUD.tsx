@@ -15,6 +15,8 @@ export function HUD({
   onPowers,
   onFeed,
   canFeed,
+  aiMode,
+  onToggleAi,
 }: {
   petName: string;
   stage: PetStage;
@@ -28,6 +30,8 @@ export function HUD({
   onPowers: () => void;
   onFeed: () => void;
   canFeed: boolean;
+  aiMode: boolean;
+  onToggleAi: () => void;
 }) {
   const fullness = 100 - hunger;
   const hungerColor =
@@ -50,6 +54,17 @@ export function HUD({
             title="Math Powers"
           >
             ⚡ {masteredCount}/{totalPowers}
+          </button>
+          <button
+            onClick={onToggleAi}
+            className={`chip font-bold ${
+              aiMode
+                ? "bg-fuchsia-500 text-white"
+                : "bg-white text-gray-500 border border-gray-300"
+            }`}
+            title={aiMode ? "AI mode: problems generated live" : "Switch to AI-generated problems"}
+          >
+            🤖 {aiMode ? "AI" : "Off"}
           </button>
           <button
             onClick={onFeed}

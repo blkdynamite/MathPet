@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "eval": "tsx evals/scaffold.eval.ts",
+    "eval": "npm run eval:scaffold && npm run eval:generate",
+    "eval:scaffold": "tsx evals/scaffold.eval.ts",
+    "eval:generate": "tsx evals/generate.eval.ts",
     "test:verify": "tsx evals/verify.test.ts"
   },
   "dependencies": {

@@ -4,6 +4,8 @@ import { SCAFFOLDS } from "@/lib/scaffolds";
 import { Scaffold } from "@/lib/types";
 import { MISCONCEPTION_DIAGNOSIS, Misconception } from "@/lib/misconceptions";
 import { verifyScaffold } from "@/lib/verify";
+import { SKILL_TO_SAMPLE_SCAFFOLD } from "@/lib/generate";
+import { SkillId } from "@/lib/skills";
 
 export const runtime = "nodejs";
 
@@ -41,6 +43,7 @@ type Input = {
   concept: string;
   technique: string;
   misconception?: Misconception;
+  skillId?: SkillId;
 };
 
 async function callClaude(input: Input): Promise<Scaffold | null> {
@@ -80,8 +83,18 @@ async function callClaude(input: Input): Promise<Scaffold | null> {
   }
 }
 
-function fallbackFor(problemId: string, misconception?: Misconception): Scaffold | null {
-  const fb = SCAFFOLDS[problemId];
+function fallbackFor(
+  problemId: string,
+  skillId?: SkillId,
+  misconception?: Misconception
+): Scaffold | null {
+  // Direct hit for hand-authored problems.
+  let fb = SCAFFOLDS[problemId];
+  // AI-generated problem (id starts with "gen-") — fall back by skill so the
+  // strategy is still right even if the numbers differ.
+  if (!fb && skillId && SKILL_TO_SAMPLE_SCAFFOLD[skillId]) {
+    fb = SCAFFOLDS[SKILL_TO_SAMPLE_SCAFFOLD[skillId]];
+  }
   if (!fb) return null;
   const diagnosis =
     misconception && misconception !== "unknown"
@@ -91,8 +104,8 @@ function fallbackFor(problemId: string, misconception?: Misconception): Scaffold
 }
 
 export async function POST(req: NextRequest) {
-  const body = (await req.json()) as Input & { problemId: string };
-  const { problemId, correctAnswer, misconception } = body;
+  const body = (await req.json()) as Input & { problemId: string; skillId?: SkillId };
+  const { problemId, correctAnswer, misconception, skillId } = body;
 
   const live = callClaude(body);
   const timeout = new Promise<Scaffold | null>((resolve) => setTimeout(() => resolve(null), 2500));
@@ -108,7 +121,7 @@ export async function POST(req: NextRequest) {
     console.warn(
       `[scaffold] REJECTED live output for ${problemId}: ${v.reasons.join("; ")}`
     );
-    const fb = fallbackFor(problemId, misconception);
+    const fb = fallbackFor(problemId, skillId, misconception);
     if (fb)
       return NextResponse.json({
         ...fb,
@@ -118,7 +131,7 @@ export async function POST(req: NextRequest) {
       });
   }
 
-  const fb = fallbackFor(problemId, misconception);
+  const fb = fallbackFor(problemId, skillId, misconception);
   if (fb) return NextResponse.json({ ...fb, source: "fallback" });
 
   return NextResponse.json({
