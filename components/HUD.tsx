@@ -10,6 +10,8 @@ export function HUD({
   streak,
   onShop,
   onParent,
+  onFeed,
+  canFeed,
 }: {
   petName: string;
   level: number;
@@ -19,6 +21,8 @@ export function HUD({
   streak: number;
   onShop: () => void;
   onParent: () => void;
+  onFeed: () => void;
+  canFeed: boolean;
 }) {
   const pct = Math.min(100, Math.round((xp / xpToNext) * 100));
   return (
@@ -34,6 +38,14 @@ export function HUD({
               🔥 {streak}
             </div>
           )}
+          <button
+            onClick={onFeed}
+            disabled={!canFeed}
+            className="chip bg-emerald-100 text-emerald-800 font-bold disabled:opacity-40"
+            title="Feed Sparky a cupcake (⭐20)"
+          >
+            🧁
+          </button>
           <button onClick={onShop} className="chip bg-numi-coin/20 text-amber-800 font-bold">
             ⭐ {coins}
           </button>
