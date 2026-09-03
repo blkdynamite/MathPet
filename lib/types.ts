@@ -1,14 +1,18 @@
+import type { SkillId } from "./skills";
+import type { Misconception } from "./misconceptions";
+
 export type Technique = "abacus" | "vedic" | "lattice" | "input";
 
 export type Problem = {
   id: string;
-  concept: string;           // "addition_place_value" | "mult_x11" | "mult_2x2" | "division_word"
+  concept: string;           // "division_word" | "mult_x11" | ...
+  skillId: SkillId;          // the Math Power this problem trains
+  ccss: string[];            // Common Core codes
   technique: Technique;
-  prompt: string;            // the story / question
+  prompt: string;
   answer: number;
   difficulty: number;        // 1..5
   interestTag?: string;
-  // technique hints for renderers
   abacus?: { target: number };
   vedic?: { kind: "x11" | "base10_complement"; a: number; b: number };
   lattice?: { a: number; b: number };
@@ -25,14 +29,24 @@ export type Scaffold = {
   encouragement: string;
   scaffold: ScaffoldStep[];
   bridge_back: string;
+  source?: "live" | "fallback" | "empty";
 };
 
+// One attempt at one problem. This is the telemetry that feeds the
+// Parent Summary, the Tutor Brief, and (in production) Nerdy's Study Plan.
 export type Session = {
+  ts: number;
+  problemId: string;
+  skillId: SkillId;
   concept: string;
-  correct: boolean;
-  hintsUsed: number;
-  timeSec: number;
+  ccss: string[];
   technique: Technique;
+  correct: boolean;          // eventually correct
+  firstTry: boolean;         // correct with no scaffold
+  scaffoldUsed: boolean;
+  misconception?: Misconception;
+  userAnswer?: number;
+  timeSec: number;
 };
 
 export type ShopItem = {
