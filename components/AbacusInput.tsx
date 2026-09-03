@@ -45,8 +45,21 @@ export function AbacusInput({
 
   return (
     <div className="space-y-3">
-      <div className="text-center text-xs text-gray-500 font-semibold uppercase tracking-wide">
-        Tap beads to build <span className="text-numi-accent">{target}</span>
+      <div className="text-center space-y-1">
+        <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+          Tap beads to build <span className="text-numi-accent text-base">{target}</span>
+        </div>
+        <div className="flex justify-center gap-3 text-[10px] text-gray-600">
+          <span className="flex items-center gap-1">
+            <span className="inline-block w-3 h-2 rounded-full bg-sky-500 border border-sky-600" />
+            top = 5
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="inline-block w-3 h-2 rounded-full bg-orange-500 border border-orange-600" />
+            bottom = 1
+          </span>
+          <span>· column = place value</span>
+        </div>
       </div>
 
       <div className="bg-gradient-to-b from-amber-100 to-amber-50 rounded-2xl border-2 border-amber-300 p-3">

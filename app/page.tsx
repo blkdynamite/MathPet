@@ -10,6 +10,11 @@ import { ScaffoldLadder } from "@/components/ScaffoldLadder";
 import { PetShop } from "@/components/PetShop";
 import { ParentModal } from "@/components/ParentModal";
 import { Onboarding } from "@/components/Onboarding";
+import { RewardNudge, NudgeReason } from "@/components/RewardNudge";
+
+const CUPCAKE_COST = 20;
+const CUPCAKE_XP = 5;
+const STREAK_NUDGE_EVERY = 3;
 
 type SaveState = {
   name: string;
@@ -51,6 +56,7 @@ export default function Home() {
   const [scaffoldLoading, setScaffoldLoading] = useState(false);
   const [showShop, setShowShop] = useState(false);
   const [showParent, setShowParent] = useState(false);
+  const [nudge, setNudge] = useState<NudgeReason | null>(null);
 
   useEffect(() => {
     const saved = loadState();
@@ -93,38 +99,66 @@ export default function Home() {
     setTimeout(() => setBubble((b) => (b === text ? null : b)), ms);
   }
 
-  function grantReward(base: number) {
+  // returns whether a level-up happened this call, plus the new streak value
+  function grantReward(base: number): { leveledUp: boolean; newStreak: number } {
+    let leveledUp = false;
+    let newStreak = 0;
     setState((s) => {
       if (!s) return s;
       let xp = s.xp + base;
       let level = s.level;
       let coins = s.coins + 5;
-      let leveledUp = false;
       if (xp >= XP_TO_NEXT) {
         xp = xp - XP_TO_NEXT;
         level += 1;
         coins += 25;
         leveledUp = true;
       }
-      if (leveledUp) {
-        setMood("levelup");
-        say(`🎉 Level ${level}! +25 coins!`, 3500);
-        setTimeout(() => setMood("idle"), 2500);
-      }
-      return { ...s, xp, level, coins, streak: s.streak + 1 };
+      newStreak = s.streak + 1;
+      return { ...s, xp, level, coins, streak: newStreak };
     });
+    return { leveledUp, newStreak };
+  }
+
+  function feedCupcake() {
+    setState((s) => {
+      if (!s || s.coins < CUPCAKE_COST) return s;
+      let xp = s.xp + CUPCAKE_XP;
+      let level = s.level;
+      let coins = s.coins - CUPCAKE_COST;
+      if (xp >= XP_TO_NEXT) {
+        xp -= XP_TO_NEXT;
+        level += 1;
+        coins += 25;
+      }
+      return { ...s, xp, level, coins };
+    });
+    say("Nom nom! 🧁 +5 XP");
+    setMood("happy");
+    setTimeout(() => setMood("idle"), 1200);
+    setNudge(null);
   }
 
   async function handleResult(correct: boolean, userAnswer: number) {
     if (correct) {
       setMood("happy");
       say("Yes! 🎉");
-      grantReward(10);
+      const { leveledUp, newStreak } = grantReward(10);
       setScaffold(null);
+      const shouldNudge =
+        leveledUp || (newStreak > 0 && newStreak % STREAK_NUDGE_EVERY === 0);
       setTimeout(() => {
         setMood("idle");
         setBubble(null);
-        setDemoIndex((i) => i + 1);
+        if (shouldNudge) {
+          // On level-up, animation plays first; give it time.
+          setTimeout(
+            () => setNudge(leveledUp ? "levelup" : "streak"),
+            leveledUp ? 1200 : 200
+          );
+        } else {
+          setDemoIndex((i) => i + 1);
+        }
       }, 1500);
       return;
     }
@@ -205,6 +239,8 @@ export default function Home() {
         streak={state.streak}
         onShop={() => setShowShop(true)}
         onParent={() => setShowParent(true)}
+        onFeed={feedCupcake}
+        canFeed={state.coins >= CUPCAKE_COST}
       />
 
       <div className="card bg-gradient-to-b from-sky-100 to-white min-h-[240px] flex items-end justify-center relative">
@@ -232,10 +268,33 @@ export default function Home() {
           equipped={state.equipped}
           onBuy={buyItem}
           onEquip={equipItem}
-          onClose={() => setShowShop(false)}
+          onClose={() => {
+            setShowShop(false);
+            if (nudge) {
+              setNudge(null);
+              setDemoIndex((i) => i + 1);
+            }
+          }}
         />
       )}
       {showParent && <ParentModal onClose={() => setShowParent(false)} />}
+      {nudge && !showShop && (
+        <RewardNudge
+          reason={nudge}
+          coins={state.coins}
+          streak={state.streak}
+          canFeed={state.coins >= CUPCAKE_COST}
+          onFeed={() => {
+            feedCupcake();
+            setDemoIndex((i) => i + 1);
+          }}
+          onShop={() => setShowShop(true)}
+          onDismiss={() => {
+            setNudge(null);
+            setDemoIndex((i) => i + 1);
+          }}
+        />
+      )}
     </main>
   );
 }
