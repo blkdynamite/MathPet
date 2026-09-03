@@ -9,7 +9,8 @@ export type Problem = {
   skillId: SkillId;          // the Math Power this problem trains
   ccss: string[];            // Common Core codes
   technique: Technique;
-  prompt: string;
+  prompt: string;            // the question only — short
+  hint?: string;             // optional strategy nudge, rendered muted below the question
   answer: number;
   difficulty: number;        // 1..5
   interestTag?: string;

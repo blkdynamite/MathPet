@@ -2,6 +2,7 @@ import { Problem } from "./types";
 
 // Hand-verified seed bank. Each problem trains exactly one Math Power (skillId)
 // and is tagged to Common Core so the Tutor Brief can cite standards.
+// `prompt` is the question only; `hint` is the strategy nudge shown muted below.
 // Production replaces this with LLM-generated variants where CODE picks the
 // numbers and the LLM writes the story (see README → Architecture).
 
@@ -13,8 +14,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "make10",
     ccss: ["2.OA.B.2", "3.NBT.A.2"],
     technique: "input",
-    prompt:
-      "8 + 7 = ? Use the 'make-10' trick: give 2 from the 7 to the 8 to make 10, then add what's left.",
+    prompt: "8 + 7 = ?",
+    hint: "Use the make-10 trick: give 2 from the 7 to the 8 to make 10, then add what's left.",
     answer: 15,
     difficulty: 1,
   },
@@ -24,8 +25,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "make10",
     ccss: ["2.OA.B.2", "3.NBT.A.2"],
     technique: "input",
-    prompt:
-      "Sparky found 9 space rocks, then 6 more. 9 + 6 = ? (Make-10: give 1 from the 6 to the 9.)",
+    prompt: "Sparky found 9 space rocks, then 6 more. How many rocks?",
+    hint: "Make-10: give 1 from the 6 to the 9.",
     answer: 15,
     difficulty: 1,
     interestTag: "space",
@@ -38,8 +39,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "abacus",
     ccss: ["2.NBT.A.1"],
     technique: "abacus",
-    prompt:
-      "Build the number 23 on the abacus. Each column is a place value: tens on the left, ones on the right. Big top bead = 5, each bottom bead = 1.",
+    prompt: "Build the number 23 on the abacus.",
+    hint: "Tens on the left, ones on the right. Big top bead = 5, each bottom bead = 1.",
     answer: 23,
     difficulty: 1,
     interestTag: "space",
@@ -51,8 +52,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "abacus",
     ccss: ["2.NBT.A.1", "3.NBT.A.1"],
     technique: "abacus",
-    prompt:
-      "Build 47 on the abacus. Tip: use the top 5-bead in the ones column so you don't have to slide 7 little beads.",
+    prompt: "Build 47 on the abacus.",
+    hint: "Use the top 5-bead in the ones column so you don't have to slide 7 little beads.",
     answer: 47,
     difficulty: 2,
     interestTag: "animals",
@@ -66,8 +67,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "fairshare",
     ccss: ["3.OA.A.2", "3.OA.C.7"],
     technique: "input",
-    prompt:
-      "Sparky needs 24 space rocks. Each asteroid holds 6 rocks. How many asteroids does he need to visit? (24 ÷ 6)",
+    prompt: "Sparky needs 24 space rocks. Each asteroid holds 6 rocks. How many asteroids does he need to visit?",
+    hint: "\"Each\" and \"how many groups\" means divide: 24 ÷ 6.",
     answer: 4,
     difficulty: 3,
     interestTag: "space",
@@ -78,8 +79,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "fairshare",
     ccss: ["3.OA.A.2", "3.OA.C.7"],
     technique: "input",
-    prompt:
-      "A coach shares 72 basketballs equally into 8 hoops. How many balls end up in each hoop? (72 ÷ 8)",
+    prompt: "A coach shares 72 basketballs equally into 8 hoops. How many balls in each hoop?",
+    hint: "Sharing equally means divide: 72 ÷ 8. Skip-count by 8s if you're stuck.",
     answer: 9,
     difficulty: 3,
     interestTag: "sports",
@@ -90,8 +91,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "fairshare",
     ccss: ["3.OA.A.2", "4.NBT.B.6"],
     technique: "input",
-    prompt:
-      "144 stars are grouped into 12 galaxies, evenly. How many stars per galaxy? (Hint: 12 × 10 = 120 is a good anchor.)",
+    prompt: "144 stars are grouped evenly into 12 galaxies. How many stars per galaxy?",
+    hint: "12 × 10 = 120 is a good anchor. How many more 12s to reach 144?",
     answer: 12,
     difficulty: 3,
     interestTag: "space",
@@ -104,8 +105,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "breakapart",
     ccss: ["3.OA.B.5", "3.OA.C.7"],
     technique: "input",
-    prompt:
-      "A rocket uses 12 gallons of fuel per launch. How many gallons for 7 launches? (Try the break-apart trick: 7 = 5 + 2.)",
+    prompt: "A rocket uses 12 gallons of fuel per launch. How many gallons for 7 launches?",
+    hint: "Break-apart: 7 = 5 + 2. Do 12 × 5, then 12 × 2, then add.",
     answer: 84,
     difficulty: 3,
     interestTag: "space",
@@ -118,8 +119,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "twostep",
     ccss: ["3.OA.D.8"],
     technique: "input",
-    prompt:
-      "Sparky owns 3 tanks with 15 fish each. He gives 5 fish to a friend. How many fish does he have left? (Multiply first, then subtract.)",
+    prompt: "Sparky owns 3 tanks with 15 fish each. He gives 5 fish to a friend. How many fish does he have left?",
+    hint: "Two steps: multiply first to find the total, then subtract.",
     answer: 40,
     difficulty: 4,
     interestTag: "animals",
@@ -132,8 +133,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "roundadjust",
     ccss: ["3.NBT.A.2"],
     technique: "input",
-    prompt:
-      "Sparky had 156 acorns and ate 89. How many are left? (Try 'round to 90 then adjust'.)",
+    prompt: "Sparky had 156 acorns and ate 89. How many are left?",
+    hint: "Round 89 up to 90, subtract, then add 1 back.",
     answer: 67,
     difficulty: 3,
     interestTag: "animals",
@@ -146,8 +147,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "partialsums",
     ccss: ["3.NBT.A.2"],
     technique: "input",
-    prompt:
-      "A stadium has 245 fans on the left side and 378 on the right. How many total? (Try adding the hundreds first, then the rest.)",
+    prompt: "A stadium has 245 fans on the left side and 378 on the right. How many fans in total?",
+    hint: "Add the hundreds first (200 + 300), then the rest.",
     answer: 623,
     difficulty: 3,
     interestTag: "sports",
@@ -160,8 +161,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "x11",
     ccss: ["4.NBT.B.5"],
     technique: "vedic",
-    prompt:
-      "23 × 11 the fast way. Split the digits (2 _ 3), add them (2+3), drop the sum in the middle. Try it!",
+    prompt: "23 × 11 = ?",
+    hint: "Split the digits (2 _ 3), add them (2 + 3), drop the sum in the middle.",
     answer: 253,
     difficulty: 3,
     interestTag: "sports",
@@ -173,8 +174,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "x11",
     ccss: ["4.NBT.B.5"],
     technique: "vedic",
-    prompt:
-      "36 × 11 using the ×11 trick. Split 3 and 6, add them, drop the sum between.",
+    prompt: "36 × 11 = ?",
+    hint: "Same ×11 trick: split 3 and 6, add them, drop the sum between.",
     answer: 396,
     difficulty: 3,
     interestTag: "space",
@@ -188,8 +189,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "lattice",
     ccss: ["4.NBT.B.5"],
     technique: "lattice",
-    prompt:
-      "34 × 27 using the lattice (box) method. Split each number into tens + ones, multiply each cell, then add all four cells together.",
+    prompt: "34 × 27 = ?",
+    hint: "Lattice: split each number into tens + ones, multiply each cell, then add all four.",
     answer: 918,
     difficulty: 4,
     interestTag: "space",
@@ -201,8 +202,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "lattice",
     ccss: ["4.NBT.B.5"],
     technique: "lattice",
-    prompt:
-      "45 × 23 with the lattice. 45 = 40 + 5. 23 = 20 + 3. Fill the 4 cells, then add.",
+    prompt: "45 × 23 = ?",
+    hint: "45 = 40 + 5 and 23 = 20 + 3. Fill the 4 cells, then add.",
     answer: 1035,
     difficulty: 4,
     interestTag: "animals",
@@ -216,8 +217,8 @@ export const PROBLEMS: Problem[] = [
     skillId: "near100",
     ccss: ["4.NBT.B.5", "5.NBT.B.5"],
     technique: "vedic",
-    prompt:
-      "97 × 98 = ? Both numbers are close to 100. Find each 'deficit' (100 − number), cross-subtract, and multiply the deficits.",
+    prompt: "97 × 98 = ?",
+    hint: "Both are close to 100. Find each deficit (100 − number), cross-subtract, then multiply the deficits.",
     answer: 9506,
     difficulty: 4,
     vedic: { kind: "base10_complement", a: 97, b: 98 },

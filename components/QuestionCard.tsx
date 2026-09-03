@@ -25,6 +25,11 @@ export function QuestionCard({
         <span className="font-mono text-[10px]">{problem.ccss[0]}</span>
       </div>
       <div className="text-lg font-semibold text-gray-800 leading-snug">{problem.prompt}</div>
+      {problem.hint && (
+        <div className="text-sm text-gray-500 font-normal leading-snug -mt-1">
+          <span className="text-gray-400">Hint:</span> {problem.hint}
+        </div>
+      )}
 
       {problem.technique === "abacus" && problem.abacus && (
         <AbacusInput

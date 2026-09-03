@@ -39,7 +39,8 @@ type SaveState = {
 
 const LS_KEY = "numi_state_v2";
 const CUPCAKE_COST = 20;
-const STREAK_NUDGE_EVERY = 3;
+// Feed modal fires after the 2nd correct answer, then every 3rd after that (2, 5, 8…).
+const shouldNudgeAt = (streak: number) => streak === 2 || (streak > 2 && (streak - 2) % 3 === 0);
 const HUNGER_FULL_AFTER_MS = 8 * 3600 * 1000; // starving after 8h away
 const FEED_PER_CORRECT = 34;                   // 3 correct answers = full
 const QUEST_SIZE = 3;
@@ -166,15 +167,19 @@ export default function Home() {
     return s;
   }
 
-  function feedCupcake() {
-    setState((s) => {
-      if (!s || s.coins < CUPCAKE_COST) return s;
-      return { ...s, coins: s.coins - CUPCAKE_COST, lastFedAt: Date.now(), fedToday: QUEST_SIZE };
-    });
+  function feedItem(itemId: string) {
+    const item = getItem(itemId);
+    if (!item || item.kind !== "food") return;
+    if (state!.coins < item.price) return;
+    setState((s) =>
+      s
+        ? { ...s, coins: s.coins - item.price, lastFedAt: Date.now(), fedToday: QUEST_SIZE }
+        : s
+    );
     setHungerOverride(null);
-    say("Nom nom! 🧁 So full!");
-    setMood("happy");
-    setTimeout(() => setMood("idle"), 1200);
+    say(`Nom nom! ${item.emoji} ${item.id === "food-smoothie" ? "Rainbow power!" : "So full!"}`);
+    setMood(item.id === "food-smoothie" ? "levelup" : "happy");
+    setTimeout(() => setMood("idle"), item.id === "food-smoothie" ? 2000 : 1200);
     setNudge(null);
   }
 
@@ -249,7 +254,7 @@ export default function Home() {
             setMood("idle");
             setDemoIndex((i) => i + 1);
           }, 2200);
-        } else if (newStreak % STREAK_NUDGE_EVERY === 0) {
+        } else if (shouldNudgeAt(newStreak)) {
           setMood("idle");
           setBubble(null);
           setTimeout(() => setNudge("streak"), 200);
@@ -343,7 +348,7 @@ export default function Home() {
         onShop={() => setShowShop(true)}
         onParent={() => setShowParent(true)}
         onPowers={() => setShowPowers(true)}
-        onFeed={feedCupcake}
+        onFeed={() => feedItem("food-cupcake")}
         canFeed={state.coins >= CUPCAKE_COST}
       />
 
@@ -396,11 +401,12 @@ export default function Home() {
       {nudge && !showShop && (
         <RewardNudge
           reason={nudge}
+          petName={state.name}
           coins={state.coins}
           streak={state.streak}
-          canFeed={state.coins >= CUPCAKE_COST}
-          onFeed={() => {
-            feedCupcake();
+          hunger={hunger}
+          onFeed={(id) => {
+            feedItem(id);
             setDemoIndex((i) => i + 1);
           }}
           onShop={() => setShowShop(true)}
