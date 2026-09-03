@@ -56,6 +56,15 @@ Every problem is tagged to Common Core (e.g. `3.OA.A.2`, `4.NBT.B.5`) so the Tut
 
 **Code does the math; the LLM does the language.** Answers are never LLM-generated; misconceptions are classified deterministically; stats are pre-aggregated. The model only writes prose over verified numbers.
 
+### 0. Guardrail: nothing unverified reaches a child (`lib/verify.ts`, `/api/scaffold`)
+
+Every LLM-generated scaffold is re-derived in code before it is displayed. `verifyScaffold` extracts arithmetic expressions from each rung's question text, evaluates them, and rejects the ladder if any rung's stated answer disagrees. Rejected ladders fall back to the hand-verified `SCAFFOLDS[problemId]`. Rejections are logged with the reason. This is the invariant that lets us put a language model in front of a nine-year-old.
+
+- **Runtime:** every `/api/scaffold` response passes through the verifier.
+- **Offline suite:** `npm run test:verify` (21 checks) and `npm run eval` (scores JSON validity, rung correctness, answer leakage, reading level, and misconception addressing across all fallbacks and — with `ANTHROPIC_API_KEY` set — 20 live cases). Results committed at [`evals/results.json`](evals/results.json); see [`evals/README.md`](evals/README.md) for the contract.
+
+Latest offline run: **16/16 JSON valid · 16/16 arithmetic clean · 0 failed rungs · 16/16 no bridge leak · 16/16 reading level ok**.
+
 ### 1. Misconception classifier → scaffold ladder (`lib/misconceptions.ts`, `/api/scaffold`)
 On a wrong answer, code classifies the error first:
 
@@ -168,6 +177,7 @@ Replaces `DEMO_ORDER`. Problem *numbers* are generated in code per gate; the LLM
 | 10 Math Powers across 3 Eastern techniques | ✅ | + spaced review |
 | Mastery tracking + pet evolution | ✅ | server-side |
 | Misconception classifier → targeted scaffold | ✅ live + fallback | wider taxonomy, learned from tutor labels |
+| Scaffold verifier + `npm run eval` | ✅ 21/21 unit tests, 0 failed rungs across 16 fallbacks | tool-use JSON schema, live-eval CI gate |
 | Hunger / daily quest / streak | ✅ | push notification at hunger 60% |
 | Star Coins + Pet Shop | ✅ | inventory service |
 | Parent Note | ✅ real LLM over real device telemetry | weekly email |

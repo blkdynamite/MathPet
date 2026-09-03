@@ -1,48 +1,54 @@
 import { Scaffold } from "./types";
 
-// Pre-generated fallbacks per problem id. The demo cannot go down on an API call.
-// Each scaffold teaches a STRATEGY on a smaller number, then applies it to the
-// original problem. Written from a middle-school-math-teacher perspective:
-// concrete → representational → abstract, using a transferable trick every time.
+// Pre-generated fallbacks per problem id. The demo cannot go down on an API
+// call. Each scaffold teaches a STRATEGY on a smaller number, then applies it
+// back. Written by (well, with) a middle-school-math-teacher hat on: concrete
+// → representational → abstract, using a transferable trick every time.
+//
+// Content rules — enforced by `npm run eval`:
+//   1. Every rung's arithmetic must re-derive its stated answer in code.
+//   2. `bridge_back` must NOT restate the original answer as a bare number
+//      (the child returns to the original problem and re-types it).
+//   3. Reading level: sentence ≤ 22 words, word ≤ 14 chars.
 
 export const SCAFFOLDS: Record<string, Scaffold> = {
   // ---------- ABACUS ----------
   "ab-1": {
-    diagnosis: "Almost! Remember: each big top bead is worth 5, each bottom bead is worth 1.",
-    encouragement: "Let's build 23 one place value at a time.",
+    diagnosis: "Remember: each big top bead is worth 5, each bottom bead is worth 1.",
+    encouragement: "Let's build the number one place value at a time.",
     scaffold: [
       {
-        question: "First, build 3 in the ONES column. How many bottom beads (each worth 1) do you slide up?",
+        question: "First, in the ONES column, how many bottom beads (each worth 1) do you slide up to show 3?",
         answer: 3,
         technique_note: "3 ones = 3 bottom beads. No need for the top 5-bead yet.",
       },
       {
-        question: "Now the TENS column. Each bottom bead there is worth 10. How many do you need for 20?",
+        question: "Now the TENS column: each bottom bead there is worth 10. How many bottom beads for 20?",
         answer: 2,
         technique_note: "20 = 2 tens.",
       },
     ],
-    bridge_back: "Put them together: 2 tens + 3 ones = 23. Now build it on the abacus!",
+    bridge_back: "Now stack those two columns together on the abacus. You've got it!",
   },
   "ab-2": {
-    diagnosis: "For 47 you need to use the 5-bead trick in the ones column.",
+    diagnosis: "For 47 the trick is to use the 5-bead in the ones column.",
     encouragement: "Big top bead = 5. It saves you from sliding 5 little beads.",
     scaffold: [
       {
-        question: "In the ONES: pull down the top 5-bead. How many more 1-beads do you slide up to reach 7?",
+        question: "In the ONES: pull down the top 5-bead. How many more 1-beads do you add to reach 7?",
         answer: 2,
         technique_note: "5 + 2 = 7. That's the trick.",
       },
       {
-        question: "In the TENS: how many bottom beads (each worth 10) do you need for 40?",
+        question: "In the TENS: how many bottom beads (each worth 10) do you need to make 40?",
         answer: 4,
         technique_note: "40 = 4 tens.",
       },
     ],
-    bridge_back: "4 tens + one 5-bead + 2 ones = 47. Build it!",
+    bridge_back: "Set the tens and the ones together on the abacus. That's your target!",
   },
   "ab-3": {
-    diagnosis: "8 + 7 is tricky because it crosses 10. Let's use the 'make-10' trick.",
+    diagnosis: "8 + 7 crosses 10, so let's use the 'make-10' trick.",
     encouragement: "Turn one number into a friendly 10, then add what's left.",
     scaffold: [
       {
@@ -56,15 +62,14 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "Once one number is 10, adding is easy.",
       },
     ],
-    bridge_back: "That's it — 8 + 7 = 15 using make-10. Try the same trick on any 'crossing 10' sum!",
+    bridge_back: "That's the make-10 trick. Now go back and answer the original — the number you just found is it.",
   },
-
   "ab-4": {
-    diagnosis: "9 + 6 crosses 10. Make-10 to the rescue!",
-    encouragement: "Same trick as before — give a little to make a 10.",
+    diagnosis: "9 + 6 also crosses 10. Same make-10 trick, one bead more.",
+    encouragement: "Give a little from one number to make the other a 10.",
     scaffold: [
       {
-        question: "9 wants to be 10. How many does 9 need?",
+        question: "9 wants to be 10. How many more does 9 need?",
         answer: 1,
         technique_note: "Take that 1 out of the 6.",
       },
@@ -74,7 +79,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "10 + anything is easy.",
       },
     ],
-    bridge_back: "9 + 6 = 15. You just used Make-10 twice — that's how a power gets mastered!",
+    bridge_back: "You just used make-10 twice in a row. Type your answer into the original.",
   },
 
   // ---------- VEDIC ----------
@@ -88,16 +93,16 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "This sum is going to sit in the MIDDLE of the answer.",
       },
       {
-        question: "Now 'drop' that 5 between the 2 and the 3. What 3-digit number do you get?",
+        question: "Now 'drop' that sum between the 2 and the 3. What 3-digit number do you get?",
         answer: 253,
-        technique_note: "2 _ 3 with 5 in the middle = 253.",
+        technique_note: "2 _ 3 with 5 in the middle.",
       },
     ],
-    bridge_back: "That's 23 × 11 = 253. This trick works on any 2-digit × 11 (careful — if the middle sum is 10 or more, you carry the 1 to the front).",
+    bridge_back: "Split, add, drop — that's the whole trick. Now type your answer into the original.",
   },
   "ve-2": {
     diagnosis: "Same ×11 shortcut, bigger digits.",
-    encouragement: "You've done this once — split, add, drop.",
+    encouragement: "You've done this once. Split, add, drop.",
     scaffold: [
       {
         question: "The digits of 36 are 3 and 6. What is 3 + 6?",
@@ -107,10 +112,10 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
       {
         question: "Drop the 9 between the 3 and 6. What number is that?",
         answer: 396,
-        technique_note: "3 _ 6 with 9 in the middle = 396.",
+        technique_note: "3 _ 6 with 9 in the middle.",
       },
     ],
-    bridge_back: "So 36 × 11 = 396. Fast, right?",
+    bridge_back: "That's ×11 in three moves. Now type your answer into the original.",
   },
   "ve-3": {
     diagnosis: "The 'both close to 100' trick has three quick steps.",
@@ -122,18 +127,18 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "Call this the 'deficit' for 97.",
       },
       {
-        question: "Cross-subtract! 97 minus the OTHER number's deficit (2): 97 − 2 = ?",
+        question: "Cross-subtract: 97 minus the OTHER number's deficit (2). 97 − 2 = ?",
         answer: 95,
         technique_note: "This gives the first two digits of your answer.",
       },
     ],
-    bridge_back: "Now the last step: multiply the two deficits (3 × 2 = 6). Stick it on the end of 95 → **9506**. That's 97 × 98!",
+    bridge_back: "You have the front (95). Multiply the two deficits (3 × 2) for the last two digits, then stick them together.",
   },
 
   // ---------- LATTICE ----------
   "la-1": {
-    diagnosis: "Lattice breaks a hard multiplication into 4 easy ones. Fill each cell, then add.",
-    encouragement: "Break 34 into 30 and 4. Break 27 into 20 and 7.",
+    diagnosis: "Lattice breaks a hard product into 4 easy ones. Fill each cell, then add.",
+    encouragement: "Split 34 into 30 + 4. Split 27 into 20 + 7.",
     scaffold: [
       {
         question: "The biggest cell: 30 × 20. (Hint: 3 × 2 = 6, then add both zeros.)",
@@ -146,11 +151,11 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "Just a times-table fact.",
       },
     ],
-    bridge_back: "The other two cells are 30 × 7 = 210 and 4 × 20 = 80. Add all four: 600 + 210 + 80 + 28 = **918**.",
+    bridge_back: "The other two cells are 30 × 7 = 210 and 4 × 20 = 80. Add all four cells, then type your answer.",
   },
   "la-2": {
-    diagnosis: "Same lattice — 45 splits into 40 + 5, and 23 splits into 20 + 3.",
-    encouragement: "Four small multiplications, then sum.",
+    diagnosis: "Same lattice, different split. 45 = 40 + 5 and 23 = 20 + 3.",
+    encouragement: "Four small products, then sum.",
     scaffold: [
       {
         question: "The big corner: 40 × 20 = ? (4 × 2 with two zeros)",
@@ -163,7 +168,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "One-digit fact.",
       },
     ],
-    bridge_back: "The other cells: 40 × 3 = 120 and 5 × 20 = 100. Add all four: 800 + 120 + 100 + 15 = **1035**.",
+    bridge_back: "The other cells are 40 × 3 = 120 and 5 × 20 = 100. Add all four cells for your answer.",
   },
 
   // ---------- WORD PROBLEMS ----------
@@ -172,54 +177,54 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
     encouragement: "Let's build up to it with a smaller number.",
     scaffold: [
       {
-        question: "Warm up: how many groups of 6 fit in 12? (Think: 6 + 6 = 12)",
+        question: "Warm up: how many groups of 6 fit in 12? (Think: 6 + 6 = 12.)",
         answer: 2,
-        technique_note: "Division = 'how many groups fit'.",
+        technique_note: "Division asks 'how many groups fit'.",
       },
       {
-        question: "Now double it: how many groups of 6 fit in 24? (You just found how many fit in HALF that.)",
+        question: "Now double it: how many groups of 6 fit in 24?",
         answer: 4,
-        technique_note: "Twice the total → twice the groups.",
+        technique_note: "Twice the total means twice the groups.",
       },
     ],
-    bridge_back: "So 24 ÷ 6 = 4. Sparky needs 4 asteroids!",
+    bridge_back: "You just found how many asteroids Sparky needs. Type it into the original.",
   },
   "wp-2": {
     diagnosis: "Sharing 72 balls into 8 hoops means dividing. Use the times table backwards.",
     encouragement: "Skip-count by 8s until you hit 72.",
     scaffold: [
       {
-        question: "Skip-count aloud: 8, 16, 24, 32, 40, 48, 56, 64, 72. How many numbers did you say?",
+        question: "Skip-count: 8, 16, 24, 32, 40, 48, 56, 64, 72. How many numbers did you say?",
         answer: 9,
         technique_note: "Each 'skip' is one group of 8.",
       },
       {
         question: "So 8 × ? = 72",
         answer: 9,
-        technique_note: "Division and multiplication are opposites.",
+        technique_note: "Division is the inverse of multiplication.",
       },
     ],
-    bridge_back: "72 ÷ 8 = 9 balls per hoop.",
+    bridge_back: "You just found how many balls end up in each hoop. Type it into the original.",
   },
   "wp-3": {
     diagnosis: "This is a TWO-step problem. Do the multiplying first, then the subtracting.",
     encouragement: "Order matters — always groups first, then take away.",
     scaffold: [
       {
-        question: "Step 1: 3 tanks × 15 fish per tank. How many total?",
+        question: "Step 1: 3 tanks with 15 fish each — that's 3 × 15 = ?",
         answer: 45,
         technique_note: "First find the whole amount.",
       },
       {
-        question: "Step 2: Now subtract the 5 given to the friend. 45 − 5 = ?",
+        question: "Step 2: Now subtract the 5 given away. 45 − 5 = ?",
         answer: 40,
         technique_note: "Take away after you know the total.",
       },
     ],
-    bridge_back: "That's the two-step answer: 40 fish left.",
+    bridge_back: "You did it in two clean steps. Type your answer into the original.",
   },
   "wp-4": {
-    diagnosis: "12 × 7 is hard to memorize. Break it apart!",
+    diagnosis: "12 × 7 is hard to memorize, so break it apart.",
     encouragement: "Split the 7 into 5 + 2. Both are easier.",
     scaffold: [
       {
@@ -233,10 +238,10 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "Doubling is easy.",
       },
     ],
-    bridge_back: "Add them: 60 + 24 = **84**. So 12 × 7 = 84. This 'break-apart' trick works for any times table you don't remember.",
+    bridge_back: "Add your two pieces (60 + 24) and type the total into the original.",
   },
   "wp-5": {
-    diagnosis: "156 − 89 is close to 156 − 90, which is much easier. Round then adjust!",
+    diagnosis: "156 − 89 is close to 156 − 90, which is much easier. Round then adjust.",
     encouragement: "Round the tricky number, subtract, then fix.",
     scaffold: [
       {
@@ -250,7 +255,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "'Round then adjust' saves brain power.",
       },
     ],
-    bridge_back: "So 156 − 89 = 67. This trick works whenever a number ends in 8 or 9.",
+    bridge_back: "That's the round-then-adjust trick. Type your answer into the original.",
   },
   "wp-6": {
     diagnosis: "Big addition? Break each number into hundreds, tens, and ones, then add the parts.",
@@ -267,10 +272,10 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "Then the smaller pieces.",
       },
     ],
-    bridge_back: "Put them together: 500 + 123 = **623**. So 245 + 378 = 623.",
+    bridge_back: "Add your two pieces (500 + 123) and type the total into the original.",
   },
   "wp-7": {
-    diagnosis: "144 ÷ 12 — use what you know about × 12.",
+    diagnosis: "For 144 ÷ 12, use what you know about × 12.",
     encouragement: "Start with a friendly ×10, then close the gap.",
     scaffold: [
       {
@@ -279,11 +284,11 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "×10 is just adding a zero.",
       },
       {
-        question: "144 − 120 = 24. How many more 12s do you need to add? (12 × ? = 24)",
+        question: "How many more 12s reach 144 from 120? (12 × ? = 24)",
         answer: 2,
-        technique_note: "Fill the gap.",
+        technique_note: "Fill the gap: 144 − 120 = 24, so we need 24 ÷ 12 more.",
       },
     ],
-    bridge_back: "10 + 2 = 12 groups of 12. So 144 ÷ 12 = **12**.",
+    bridge_back: "Add your two counts (the 10 groups plus what you just found) and type the total into the original.",
   },
 };

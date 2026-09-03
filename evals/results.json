@@ -1,0 +1,261 @@
+{
+  "generatedAt": "2026-09-03T10:57:52.477Z",
+  "model": "claude-haiku-4-5",
+  "fallback": {
+    "rows": [
+      {
+        "case": "ab-1",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 0,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": []
+      },
+      {
+        "case": "ab-2",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 0,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": []
+      },
+      {
+        "case": "ab-3",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 1,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": false,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "ab-4",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 1,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "ve-1",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 1,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "ve-2",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 1,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "ve-3",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": []
+      },
+      {
+        "case": "la-1",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": []
+      },
+      {
+        "case": "la-2",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": false,
+        "classifierOk": true,
+        "reasons": []
+      },
+      {
+        "case": "wp-1",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "wp-2",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 1,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "wp-3",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "wp-4",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": false,
+        "classifierOk": true,
+        "reasons": []
+      },
+      {
+        "case": "wp-5",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": [
+          "a rung's answer equals the original answer"
+        ]
+      },
+      {
+        "case": "wp-6",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": true,
+        "classifierOk": true,
+        "reasons": []
+      },
+      {
+        "case": "wp-7",
+        "source": "fallback",
+        "jsonOk": true,
+        "runCount": 2,
+        "rungsVerified": 2,
+        "rungsFailed": 0,
+        "arithmeticOk": true,
+        "bridgeLeaks": false,
+        "readingOk": true,
+        "addressesMisconception": false,
+        "classifierOk": true,
+        "reasons": []
+      }
+    ],
+    "summary": {
+      "n": 16,
+      "jsonOk": 16,
+      "arithmeticOk": 16,
+      "noBridgeLeak": 16,
+      "readingOk": 16,
+      "addressed": 12,
+      "classifierOk": 16,
+      "rungsVerified": 23,
+      "rungsFailed": 0,
+      "totalRungs": 32
+    }
+  },
+  "live": null
+}

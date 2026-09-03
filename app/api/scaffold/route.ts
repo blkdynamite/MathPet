@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { SCAFFOLDS } from "@/lib/scaffolds";
 import { Scaffold } from "@/lib/types";
 import { MISCONCEPTION_DIAGNOSIS, Misconception } from "@/lib/misconceptions";
+import { verifyScaffold } from "@/lib/verify";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,12 @@ operation. Use the preferred pedagogical technique where relevant:
 - lattice: split into tens/ones grid
 - input: plain arithmetic
 
-Return STRICT JSON only, no prose:
+Return STRICT JSON only, no prose. Every rung MUST contain an arithmetic
+expression that evaluates exactly to its "answer" field (e.g. "12 × 5 = ?"
+with answer 60). Sentences ≤ 20 words, no word > 12 characters. Do not
+restate the original answer as a bare number in "bridge_back".
+
+Shape:
 {
   "diagnosis": "one friendly sentence naming the likely misconception",
   "encouragement": "one warm sentence",
@@ -23,11 +29,11 @@ Return STRICT JSON only, no prose:
     { "question": "...", "answer": <number>, "technique_note": "..." },
     { "question": "...", "answer": <number>, "technique_note": "..." }
   ],
-  "bridge_back": "one sentence connecting scaffold back to the original problem"
+  "bridge_back": "one sentence pointing back to the original — never re-stating its answer"
 }
 Do NOT reveal the original answer. Keep language for age 9.`;
 
-async function callClaude(input: {
+type Input = {
   problemId: string;
   originalQuestion: string;
   correctAnswer: number;
@@ -35,7 +41,9 @@ async function callClaude(input: {
   concept: string;
   technique: string;
   misconception?: Misconception;
-}): Promise<Scaffold | null> {
+};
+
+async function callClaude(input: Input): Promise<Scaffold | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   try {
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -63,34 +71,56 @@ async function callClaude(input: {
       .filter((b) => b.type === "text")
       .map((b: any) => b.text)
       .join("");
-    const jsonStart = text.indexOf("{");
-    const jsonEnd = text.lastIndexOf("}");
-    if (jsonStart === -1) return null;
-    return JSON.parse(text.slice(jsonStart, jsonEnd + 1));
+    const s = text.indexOf("{");
+    const e = text.lastIndexOf("}");
+    if (s === -1) return null;
+    return JSON.parse(text.slice(s, e + 1));
   } catch {
     return null;
   }
 }
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { problemId } = body;
-
-  // Race the live call vs. a 2.5s timeout; whichever wins, ship it.
-  const live = callClaude(body);
-  const fallback = new Promise<Scaffold | null>((resolve) =>
-    setTimeout(() => resolve(null), 2500)
-  );
-  const result = await Promise.race([live, fallback]);
-
-  if (result) return NextResponse.json({ ...result, source: "live" });
+function fallbackFor(problemId: string, misconception?: Misconception): Scaffold | null {
   const fb = SCAFFOLDS[problemId];
-  if (fb) {
-    const m: Misconception | undefined = body.misconception;
-    const diagnosis =
-      m && m !== "unknown" ? MISCONCEPTION_DIAGNOSIS[m] : fb.diagnosis;
-    return NextResponse.json({ ...fb, diagnosis, source: "fallback" });
+  if (!fb) return null;
+  const diagnosis =
+    misconception && misconception !== "unknown"
+      ? MISCONCEPTION_DIAGNOSIS[misconception]
+      : fb.diagnosis;
+  return { ...fb, diagnosis };
+}
+
+export async function POST(req: NextRequest) {
+  const body = (await req.json()) as Input & { problemId: string };
+  const { problemId, correctAnswer, misconception } = body;
+
+  const live = callClaude(body);
+  const timeout = new Promise<Scaffold | null>((resolve) => setTimeout(() => resolve(null), 2500));
+  const raw = await Promise.race([live, timeout]);
+
+  // GUARDRAIL: if the model returned something, verify it. If verification
+  // fails, we swap in the hand-verified fallback and record why.
+  if (raw) {
+    const v = verifyScaffold(raw, correctAnswer);
+    if (v.ok) {
+      return NextResponse.json({ ...raw, source: "live", verification: v });
+    }
+    console.warn(
+      `[scaffold] REJECTED live output for ${problemId}: ${v.reasons.join("; ")}`
+    );
+    const fb = fallbackFor(problemId, misconception);
+    if (fb)
+      return NextResponse.json({
+        ...fb,
+        source: "fallback",
+        verification: v,
+        rejectedReason: v.reasons,
+      });
   }
+
+  const fb = fallbackFor(problemId, misconception);
+  if (fb) return NextResponse.json({ ...fb, source: "fallback" });
+
   return NextResponse.json({
     diagnosis: "Not quite — let's try again.",
     encouragement: "Every mistake is a step forward!",
