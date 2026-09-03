@@ -1,136 +1,179 @@
-# Numi 🐾
+# Numi 🐾 — the between-sessions layer
 
-**Math their pet learned first.**
+**Math their pet learned first.** An AI pet-care game for grades 3–5 that turns two tutoring sessions a week into seven days of engagement — and hands the human tutor a brief before every live lesson.
 
-An AI-powered digital-pet game for 3rd–5th graders that disguises adaptive math practice as taking care of a virtual companion. Built for the Nerdy AI Hackathon.
+Built for the [Nerdy AI Hackathon](https://hackathon.nerdy.com) · prompt: *"an interactive, gamified math experience for elementary students… innovative mechanics that encourage steady progression and reward mastery of core numeracy skills."*
 
----
-
-## What's in the demo
-
-A single-page Next.js app you can record in 90 seconds:
-
-1. **Hatch a pet** → pick 3 interests → egg cracks.
-2. **Solve math problems** using one of three visual pedagogies (see below).
-3. **Get one wrong on purpose** → an **AI scaffold ladder** appears, generating two easier prerequisite problems that build up to the target concept.
-4. **Earn Star Coins** on every correct answer → open the **Pet Shop** and equip a hat.
-5. **Tap "For Parents"** → an AI-written coaching note is streamed in from a real LLM call on mock telemetry.
-
-Everything is client-side + two Next.js API routes. No database in this build.
+> **Live demo:** _(URL added on deploy)_ · **Video:** _(link)_ · Works with no API key — every AI call has a deterministic fallback.
 
 ---
 
-## The pedagogy (the actual differentiator)
+## The problem we're actually solving
 
-Most math apps drill flashcards. Numi teaches the *pattern behind the number* using three Eastern math techniques:
+Nerdy's consumer business is 84% of revenue and Learning Memberships fell 5% YoY to 29,100 (Q2 2026). A membership is ~2 live sessions a week. **The other five days, an 8-year-old has no reason to open Varsity Tutors, and the parent has no evidence the membership is working.**
 
-| Technique | What it teaches | Where in the demo |
+Nerdy's own thesis for Live + AI is *"AI supports students between sessions; human tutors provide accountability."* Numi is that between-sessions layer for the youngest learners:
+
+| Nerdy need | Numi mechanic |
+|---|---|
+| Daily engagement between sessions | Pet hunger + daily quest — the pet gets hungry overnight; 3 problems feed it |
+| "Reward mastery," not just answers | **Math Powers** skill map — mastery = clean solves on a *strategy*; the pet evolves when powers are mastered |
+| Session intelligence for the tutor | **Tutor Brief** — a 30-second pre-session read generated from play telemetry, with Common Core codes and the recurring misconception |
+| Parent can *see* value (retention) | **Parent Note** — warm, specific coaching note + one 5-minute thing to do tonight |
+| Funnel into live tutoring | "Book a live session on {weakest power} →" CTA in the parent view |
+| Study Plan data | Every attempt logged as a typed `Session` row — `skillId`, `ccss`, `misconception`, `scaffoldUsed`, `timeSec` |
+
+---
+
+## What's in the demo (90 seconds)
+
+1. Come back the next morning (`?demo=hungry`) — Sparky is hungry, asks for 3 problems.
+2. Solve two **Make-10** problems → power mastered → **pet evolves** to a Sprite.
+3. Get a division problem wrong on purpose → the classifier tags `multiplied_instead_of_divided` → the **scaffold ladder** builds two easier prerequisite problems that teach *fair share* → nail the original.
+4. Open **⚡ Math Powers** — the skill map with Common Core codes.
+5. Open the parent view → **Parent Note** tab, then **Tutor Brief** tab → "Book a live session on Fair Share →".
+
+---
+
+## The pedagogy
+
+Most math apps drill. Numi teaches **the strategy behind the number** — 10 "Math Powers" drawn from three Eastern techniques:
+
+| Family | Powers | Rendered as |
 |---|---|---|
-| **Mental Abacus** | Group by 5s and 10s; visualize place value | `AbacusInput.tsx` — tap beads to build a target number |
-| **Vedic Shortcuts** | ×11 = split digits + add middle; base-10 complements | `VedicInput.tsx` — pattern-based multiplication |
-| **Lattice / Box** | 2-digit × 2-digit as a visual grid | `LatticeInput.tsx` — fill 2×2 cells, sum the diagonals |
+| **Mental Abacus** | Make-10, Abacus Vision | Interactive soroban — tap beads, 5s on top, 1s below, one column per place value |
+| **Vedic** | ×11 Trick, Near-100 Trick, Round & Adjust, Partial Sums | Step-by-step pattern panels with the carry rule surfaced |
+| **Lattice** | Lattice Master | 2×2 box grid with each cell labeled by its factors |
+| **Number Sense** | Fair Share, Break-Apart, Two-Step | Word problems whose scaffolds teach a named, transferable move |
 
-Every technique is rendered visually, not just described. This is what makes Numi feel like real instruction, not a quiz app.
+Every problem is tagged to Common Core (e.g. `3.OA.A.2`, `4.NBT.B.5`) so the Tutor Brief speaks the tutor's language.
+
+**Mastery**, not accuracy: a power is mastered after `MASTERY_THRESHOLD` *clean solves* (correct, first try, no scaffold). The demo uses 2 so a video can show it; production would use 3–5 with spaced review.
 
 ---
 
-## AI "superpowers"
+## The AI (three calls, one pattern)
 
-### 1. Scaffold generation (`/api/scaffold`)
-When a kid gets a problem wrong, Claude Haiku generates a **2-step ladder of easier prerequisite problems** using the preferred pedagogical technique. Falls back to a pre-generated `scaffolds.json` if the API is slow (>2.5s) — the demo cannot fail live.
+**Code does the math; the LLM does the language.** Answers are never LLM-generated; misconceptions are classified deterministically; stats are pre-aggregated. The model only writes prose over verified numbers.
 
-The prompt returns structured JSON:
+### 1. Misconception classifier → scaffold ladder (`lib/misconceptions.ts`, `/api/scaffold`)
+On a wrong answer, code classifies the error first:
+
+| Tag | Detected when |
+|---|---|
+| `multiplied_instead_of_divided` | answer = a × b on a division word problem |
+| `added_instead_of_multiplied` | answer = a + b on a multiplication problem |
+| `skipped_a_step` | answer = the intermediate result of a two-step problem, or tens×tens only on a lattice |
+| `forgot_to_carry` | ×11 answer with the middle sum ≥ 10 left uncarried |
+| `off_by_one`, `place_value_slip`, `digit_reversal` | arithmetic distance / digit pattern |
+
+The tag is passed to Claude Haiku 4.5, which must name that error in kid language and target it with the first rung. Returns strict JSON:
+
 ```json
 {
-  "diagnosis": "one sentence naming likely misconception",
-  "encouragement": "one warm sentence",
+  "diagnosis": "You multiplied — but 'sharing into groups' means DIVIDE.",
+  "encouragement": "Let's build up to it with a smaller number.",
   "scaffold": [
-    { "question": "...", "answer": 24, "technique_note": "..." },
-    { "question": "...", "answer": 4, "technique_note": "..." }
+    { "question": "Warm up: how many groups of 6 fit in 12?", "answer": 2, "technique_note": "Division = 'how many groups fit'." },
+    { "question": "Now double it: how many groups of 6 fit in 24?", "answer": 4, "technique_note": "Twice the total → twice the groups." }
   ],
-  "bridge_back": "one sentence back to the original problem"
+  "bridge_back": "So 24 ÷ 6 = 4. Sparky needs 4 asteroids!"
 }
 ```
 
-### 2. Parent summary (`/api/parent-summary`)
-Aggregates last 10 sessions (mock in this build, real telemetry in prod) → asks Claude to write a 2-paragraph coaching note for the parent. Not a dashboard, a conversation.
+The live call races a 2.5 s timeout against a hand-written fallback per problem (`lib/scaffolds.ts`); the fallback's diagnosis is swapped for the classified misconception's line. **The demo cannot fail on an API call.**
+
+### 2. Parent Note (`/api/parent-summary`)
+`aggregate(sessions)` → strongest/weakest power, first-try rate, top misconception, days active → Claude writes two paragraphs + one concrete 5-minute activity. No standards codes, no jargon.
+
+### 3. Tutor Brief (`/api/tutor-brief`)
+Same aggregate → strict JSON `{ headline, focus, pattern, suggested_opener, wins, standards[] }` written for a tutor with 30 seconds before a live session. This is the *session intelligence* half of Live + AI, generated from play instead of from a transcript.
+
+Both prefer the **real** `Session[]` from this device and fall back to seed data below 3 attempts.
+
+---
+
+## Retention mechanics
+
+- **Hunger** — `lastFedAt` timestamp; the pet is starving 8 h after the last correct answer. Each correct answer feeds a third. Loss aversion + a daily reason to return.
+- **Evolution** — Hatchling → Sprite (1 power) → Wizard (3) → Sage (5). Driven by mastery, not XP, so progression *is* learning.
+- **Star Coins** — +5 per correct, +5 extra for a scaffold-completed solve (persistence pays), +25 per mastery. Spend on hats, food, backgrounds.
+- **Reward nudge** — every 3rd correct answer or evolution prompts "feed a cupcake / open the shop," then resumes.
+- **Streak** — visible 🔥 counter; resets on a wrong answer.
 
 ---
 
 ## Stack
 
-- **Next.js 14** (App Router) + **Tailwind** + **Framer Motion**
-- **Anthropic Claude Haiku 4.5** (two API routes)
-- State: React + `localStorage` (pet level, coins, owned items persist across refresh)
-- No database in this build (see roadmap below)
-
----
-
-## Run it
+Next.js 14 (App Router) · Tailwind · Framer Motion · Anthropic Claude Haiku 4.5 · React state + `localStorage` (no database in this build).
 
 ```bash
 npm install
-cp .env.local.example .env.local        # add your ANTHROPIC_API_KEY
-npm run dev
+cp .env.local.example .env.local   # optional: ANTHROPIC_API_KEY
+npm run dev                        # http://localhost:3000
 ```
 
-Open http://localhost:3000. Works without an API key — falls back to pre-generated scaffolds and a static parent summary.
+Demo helpers: `?demo=hungry` (simulate overnight), `?demo=reset` (wipe local state).
+
+```
+app/
+  page.tsx                 game loop, state, hunger/evolution/reward logic
+  api/scaffold             misconception-aware scaffold ladder
+  api/parent-summary       parent note over aggregated telemetry
+  api/tutor-brief          tutor pre-session brief
+components/
+  Pet.tsx                  evolving SVG pet (4 stages, 7 moods)
+  AbacusInput / VedicInput / LatticeInput
+  ScaffoldLadder, SkillMap, ParentModal, PetShop, RewardNudge, HUD
+lib/
+  skills.ts                Math Powers, mastery, evolution stages
+  misconceptions.ts        deterministic error classifier
+  telemetry.ts             aggregate() — the only thing the LLM sees
+  problems.ts / scaffolds.ts / shop.ts / mockSessions.ts
+```
 
 ---
 
-## Adaptive difficulty (documented, not built in this demo)
+## How this plugs into Nerdy
 
-The full engine that the demo intentionally leaves out for scope. Would live in `lib/adaptive.ts`:
+**Study Plan.** Each `Session` row is already shaped for it: `{ ts, skillId, ccss[], correct, firstTry, scaffoldUsed, misconception, timeSec }`. Study Plan tracks lessons, practice, and live sessions; Numi *is* the practice feed for K-5, with standards attached.
 
-```
-On correct answer (no hints):   streak++
-On wrong or hint-used answer:   streak = 0, stumble_count++
-If streak >= 3:                 difficulty = min(5, difficulty + 1), streak = 0
-If stumble_count >= 2 in 3 Qs:  difficulty = max(1, difficulty - 1)
+**Live + AI.** The Tutor Brief is session intelligence generated *before* the session, from play. After the session, the tutor's notes could set the next day's `DEMO_ORDER` — the human closes the loop the AI opened.
 
-Difficulty gates:
-  1: single-digit ops
-  2: 2-digit +/-, mult tables to 10
-  3: 2×1 digit mult, simple word problems
-  4: 2×2 mult, 2-step word problems (lattice unlocks here)
-  5: 3-digit ops, multi-step word problems, Vedic challenges
-```
+**Self-serve funnel.** Numi is a free, no-login top of funnel. The parent sees a gap named in plain English and a one-tap "book a session on Fair Share" — a warm lead with a diagnosis attached, replacing a telesales call.
 
-Wired into a real problem selector, this replaces the demo's `DEMO_ORDER` array.
+**Retention.** The parent note is a weekly email waiting to happen: *"Here's what Sparky taught Maya this week."* Value the parent can see is cheaper than a cancel-by-phone policy.
 
 ---
+
+## Adaptive engine (designed, not in the demo)
+
+```
+On clean solve:                 streak++ ; progress[skill].cleanSolves++
+On scaffold or wrong:           streak = 0 ; stumble++
+If streak >= 3:                 difficulty = min(5, difficulty + 1)
+If stumble >= 2 in last 3:      difficulty = max(1, difficulty - 1)
+Next problem:  pick the lowest-mastery power at current difficulty;
+               every 4th problem, spaced-review a mastered power.
+Difficulty gates: 1 single-digit · 2 tables to 10 · 3 2×1 & simple word
+                  4 2×2 (lattice unlocks) · 5 multi-step & Vedic challenges
+```
+
+Replaces `DEMO_ORDER`. Problem *numbers* are generated in code per gate; the LLM writes the story around the child's interests.
 
 ## Built vs. planned
 
-| Feature | Demo | Production plan |
+| Feature | Demo | Production |
 |---|---|---|
-| 3 Eastern-math pedagogies (Abacus / Vedic / Lattice) | ✅ | ✅ ships |
-| AI scaffold ladder on wrong answer | ✅ (live + fallback) | LLM w/ deterministic answer verification |
-| Pet shop, coins, hats, food | ✅ | Server-side inventory + purchase history |
-| Parent summary | ✅ (real LLM, mock data) | Real telemetry via Supabase |
-| Static problem bank (15 hand-picked) | ✅ | LLM-generated w/ deterministic answer verification (code generates numbers, LLM writes the story) |
-| Adaptive difficulty engine | 📋 Documented above | Streak + stumble-count based |
-| Content safety pipeline | 📋 | Age-filter system prompt + output moderation |
-| Auth / accounts | ❌ | Supabase anonymous → parent-linked upgrade |
-| Multi-device sync | ❌ | Postgres user state |
-| Teacher dashboard | ❌ | Classroom roster + progress export |
-| Daily streak bonus | 📋 | First correct answer of the day = 2× coins |
-
-Legend: ✅ built · 📋 designed, not built · ❌ future
-
----
-
-## Why this could win
-
-1. **Stickiness** — pet reactions, coin economy, hats/food/shop, celebration animations. The retention loop is visible in 60 seconds.
-2. **AI that teaches, not answers** — the scaffold ladder is the differentiator. Most tutors give hints; Numi generates *a simpler problem you can actually solve*, then walks you back up.
-3. **Real pedagogy** — three visual techniques used by top-scoring international math programs, not just "drill and kill."
-
-## Demo script (90 seconds)
-
-- 0:00–0:08 — Hatch pet.
-- 0:08–0:25 — Solve an abacus problem correctly. Coins climb.
-- 0:25–0:50 — Get a division problem wrong on purpose → scaffold ladder appears → both rungs → nail the original.
-- 0:50–1:05 — Level up → open Pet Shop → buy wizard hat → pet wears it.
-- 1:05–1:20 — Tap "For Parents." Summary streams in.
-- 1:20–1:30 — End card.
+| 10 Math Powers across 3 Eastern techniques | ✅ | + spaced review |
+| Mastery tracking + pet evolution | ✅ | server-side |
+| Misconception classifier → targeted scaffold | ✅ live + fallback | wider taxonomy, learned from tutor labels |
+| Hunger / daily quest / streak | ✅ | push notification at hunger 60% |
+| Star Coins + Pet Shop | ✅ | inventory service |
+| Parent Note | ✅ real LLM over real device telemetry | weekly email |
+| Tutor Brief | ✅ real LLM over real device telemetry | injected into the Live Learning Platform pre-session |
+| Book-a-session CTA | ✅ link | deep-link with diagnosis payload |
+| Adaptive difficulty | 📋 above | |
+| LLM-generated problems (code picks numbers) | 📋 | |
+| Auth / multi-device / Study Plan sync | ❌ | Supabase → Nerdy |
+| Content safety pipeline | 📋 | age-filter system prompt + output moderation |

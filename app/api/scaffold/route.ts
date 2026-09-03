@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { SCAFFOLDS } from "@/lib/scaffolds";
 import { Scaffold } from "@/lib/types";
+import { MISCONCEPTION_DIAGNOSIS, Misconception } from "@/lib/misconceptions";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,7 @@ async function callClaude(input: {
   userAnswer: number;
   concept: string;
   technique: string;
+  misconception?: Misconception;
 }): Promise<Scaffold | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   try {
@@ -50,6 +52,9 @@ async function callClaude(input: {
             userAnswer: input.userAnswer,
             concept: input.concept,
             preferredTechnique: input.technique,
+            detectedMisconception: input.misconception ?? "unknown",
+            instruction:
+              "If detectedMisconception is not 'unknown', your diagnosis MUST name that specific error in kid language and the first scaffold step MUST target it directly.",
           }),
         },
       ],
@@ -80,7 +85,12 @@ export async function POST(req: NextRequest) {
 
   if (result) return NextResponse.json({ ...result, source: "live" });
   const fb = SCAFFOLDS[problemId];
-  if (fb) return NextResponse.json({ ...fb, source: "fallback" });
+  if (fb) {
+    const m: Misconception | undefined = body.misconception;
+    const diagnosis =
+      m && m !== "unknown" ? MISCONCEPTION_DIAGNOSIS[m] : fb.diagnosis;
+    return NextResponse.json({ ...fb, diagnosis, source: "fallback" });
+  }
   return NextResponse.json({
     diagnosis: "Not quite — let's try again.",
     encouragement: "Every mistake is a step forward!",

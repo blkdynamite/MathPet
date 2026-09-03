@@ -59,6 +59,24 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
     bridge_back: "That's it — 8 + 7 = 15 using make-10. Try the same trick on any 'crossing 10' sum!",
   },
 
+  "ab-4": {
+    diagnosis: "9 + 6 crosses 10. Make-10 to the rescue!",
+    encouragement: "Same trick as before — give a little to make a 10.",
+    scaffold: [
+      {
+        question: "9 wants to be 10. How many does 9 need?",
+        answer: 1,
+        technique_note: "Take that 1 out of the 6.",
+      },
+      {
+        question: "6 gave away 1, so 5 is left. What is 10 + 5?",
+        answer: 15,
+        technique_note: "10 + anything is easy.",
+      },
+    ],
+    bridge_back: "9 + 6 = 15. You just used Make-10 twice — that's how a power gets mastered!",
+  },
+
   // ---------- VEDIC ----------
   "ve-1": {
     diagnosis: "The ×11 trick works on any 2-digit number. Let's slow it down.",

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Problem } from "@/lib/types";
+import { getSkill } from "@/lib/skills";
 import { AbacusInput } from "./AbacusInput";
 import { VedicInput } from "./VedicInput";
 import { LatticeInput } from "./LatticeInput";
@@ -17,9 +18,11 @@ export function QuestionCard({
 
   return (
     <div className="card space-y-3">
-      <div className="text-xs uppercase font-bold text-gray-400 tracking-wide flex justify-between">
-        <span>Technique: {problem.technique.toUpperCase()}</span>
-        <span>Level {problem.difficulty}</span>
+      <div className="text-xs font-bold text-gray-400 tracking-wide flex justify-between items-center">
+        <span className="text-sky-700 bg-sky-50 border border-sky-100 rounded-full px-2 py-0.5">
+          ⚡ {getSkill(problem.skillId).emoji} {getSkill(problem.skillId).name}
+        </span>
+        <span className="font-mono text-[10px]">{problem.ccss[0]}</span>
       </div>
       <div className="text-lg font-semibold text-gray-800 leading-snug">{problem.prompt}</div>
 
