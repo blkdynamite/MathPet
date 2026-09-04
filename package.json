@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "eval": "npm run eval:scaffold && npm run eval:generate",
+    "eval:scaffold": "tsx evals/scaffold.eval.ts",
+    "eval:generate": "tsx evals/generate.eval.ts",
+    "test:verify": "tsx evals/verify.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
@@ -22,6 +26,7 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
+    "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   }
 }

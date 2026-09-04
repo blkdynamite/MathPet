@@ -1,0 +1,2466 @@
+{
+  "generatedAt": "2026-09-03T19:29:22.566Z",
+  "model": "claude-haiku-4-5",
+  "offline": {
+    "rows": [
+      {
+        "skill": "make10",
+        "seed": 1000,
+        "operands": [
+          9,
+          9
+        ],
+        "answer": 18,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1037,
+        "operands": [
+          8,
+          7
+        ],
+        "answer": 15,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1074,
+        "operands": [
+          8,
+          6
+        ],
+        "answer": 14,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1111,
+        "operands": [
+          9,
+          9
+        ],
+        "answer": 18,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1148,
+        "operands": [
+          7,
+          8
+        ],
+        "answer": 15,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1185,
+        "operands": [
+          9,
+          7
+        ],
+        "answer": 16,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1222,
+        "operands": [
+          7,
+          6
+        ],
+        "answer": 13,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1259,
+        "operands": [
+          8,
+          8
+        ],
+        "answer": 16,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1296,
+        "operands": [
+          8,
+          9
+        ],
+        "answer": 17,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1333,
+        "operands": [
+          9,
+          9
+        ],
+        "answer": 18,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1370,
+        "operands": [
+          6,
+          7
+        ],
+        "answer": 13,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1407,
+        "operands": [
+          7,
+          6
+        ],
+        "answer": 13,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1444,
+        "operands": [
+          9,
+          6
+        ],
+        "answer": 15,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1481,
+        "operands": [
+          8,
+          6
+        ],
+        "answer": 14,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1518,
+        "operands": [
+          6,
+          8
+        ],
+        "answer": 14,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1555,
+        "operands": [
+          6,
+          8
+        ],
+        "answer": 14,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1592,
+        "operands": [
+          7,
+          6
+        ],
+        "answer": 13,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1629,
+        "operands": [
+          9,
+          6
+        ],
+        "answer": 15,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1666,
+        "operands": [
+          8,
+          6
+        ],
+        "answer": 14,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "make10",
+        "seed": 1703,
+        "operands": [
+          7,
+          8
+        ],
+        "answer": 15,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1000,
+        "operands": [
+          88
+        ],
+        "answer": 88,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1037,
+        "operands": [
+          76
+        ],
+        "answer": 76,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1074,
+        "operands": [
+          73
+        ],
+        "answer": 73,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1111,
+        "operands": [
+          87
+        ],
+        "answer": 87,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1148,
+        "operands": [
+          60
+        ],
+        "answer": 60,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1185,
+        "operands": [
+          94
+        ],
+        "answer": 94,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1222,
+        "operands": [
+          70
+        ],
+        "answer": 70,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1259,
+        "operands": [
+          81
+        ],
+        "answer": 81,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1296,
+        "operands": [
+          75
+        ],
+        "answer": 75,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1333,
+        "operands": [
+          91
+        ],
+        "answer": 91,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1370,
+        "operands": [
+          55
+        ],
+        "answer": 55,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1407,
+        "operands": [
+          68
+        ],
+        "answer": 68,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1444,
+        "operands": [
+          91
+        ],
+        "answer": 91,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1481,
+        "operands": [
+          74
+        ],
+        "answer": 74,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1518,
+        "operands": [
+          45
+        ],
+        "answer": 45,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1555,
+        "operands": [
+          53
+        ],
+        "answer": 53,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1592,
+        "operands": [
+          62
+        ],
+        "answer": 62,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1629,
+        "operands": [
+          96
+        ],
+        "answer": 96,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1666,
+        "operands": [
+          81
+        ],
+        "answer": 81,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "abacus",
+        "seed": 1703,
+        "operands": [
+          70
+        ],
+        "answer": 70,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1000,
+        "operands": [
+          88,
+          8
+        ],
+        "answer": 11,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1037,
+        "operands": [
+          56,
+          7
+        ],
+        "answer": 8,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1074,
+        "operands": [
+          49,
+          7
+        ],
+        "answer": 7,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1111,
+        "operands": [
+          96,
+          8
+        ],
+        "answer": 12,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1148,
+        "operands": [
+          55,
+          5
+        ],
+        "answer": 11,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1185,
+        "operands": [
+          72,
+          9
+        ],
+        "answer": 8,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1222,
+        "operands": [
+          36,
+          6
+        ],
+        "answer": 6,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1259,
+        "operands": [
+          63,
+          7
+        ],
+        "answer": 9,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1296,
+        "operands": [
+          84,
+          7
+        ],
+        "answer": 12,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1333,
+        "operands": [
+          108,
+          9
+        ],
+        "answer": 12,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1370,
+        "operands": [
+          45,
+          5
+        ],
+        "answer": 9,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1407,
+        "operands": [
+          36,
+          6
+        ],
+        "answer": 6,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1444,
+        "operands": [
+          54,
+          9
+        ],
+        "answer": 6,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1481,
+        "operands": [
+          42,
+          7
+        ],
+        "answer": 6,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1518,
+        "operands": [
+          40,
+          4
+        ],
+        "answer": 10,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1555,
+        "operands": [
+          40,
+          4
+        ],
+        "answer": 10,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1592,
+        "operands": [
+          35,
+          5
+        ],
+        "answer": 7,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1629,
+        "operands": [
+          63,
+          9
+        ],
+        "answer": 7,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1666,
+        "operands": [
+          42,
+          7
+        ],
+        "answer": 6,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "fairshare",
+        "seed": 1703,
+        "operands": [
+          60,
+          6
+        ],
+        "answer": 10,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1000,
+        "operands": [
+          18,
+          9
+        ],
+        "answer": 162,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1037,
+        "operands": [
+          16,
+          7
+        ],
+        "answer": 112,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1074,
+        "operands": [
+          16,
+          6
+        ],
+        "answer": 96,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1111,
+        "operands": [
+          18,
+          9
+        ],
+        "answer": 162,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1148,
+        "operands": [
+          13,
+          8
+        ],
+        "answer": 104,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1185,
+        "operands": [
+          20,
+          7
+        ],
+        "answer": 140,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1222,
+        "operands": [
+          15,
+          6
+        ],
+        "answer": 90,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1259,
+        "operands": [
+          17,
+          8
+        ],
+        "answer": 136,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1296,
+        "operands": [
+          16,
+          9
+        ],
+        "answer": 144,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1333,
+        "operands": [
+          19,
+          9
+        ],
+        "answer": 171,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1370,
+        "operands": [
+          12,
+          7
+        ],
+        "answer": 84,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1407,
+        "operands": [
+          15,
+          6
+        ],
+        "answer": 90,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1444,
+        "operands": [
+          19,
+          6
+        ],
+        "answer": 114,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1481,
+        "operands": [
+          16,
+          6
+        ],
+        "answer": 96,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1518,
+        "operands": [
+          11,
+          8
+        ],
+        "answer": 88,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1555,
+        "operands": [
+          12,
+          8
+        ],
+        "answer": 96,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1592,
+        "operands": [
+          14,
+          6
+        ],
+        "answer": 84,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1629,
+        "operands": [
+          20,
+          6
+        ],
+        "answer": 120,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1666,
+        "operands": [
+          17,
+          6
+        ],
+        "answer": 102,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "breakapart",
+        "seed": 1703,
+        "operands": [
+          15,
+          8
+        ],
+        "answer": 120,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1000,
+        "operands": [
+          5,
+          19,
+          7
+        ],
+        "answer": 88,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1037,
+        "operands": [
+          4,
+          14,
+          5
+        ],
+        "answer": 51,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1074,
+        "operands": [
+          4,
+          12,
+          7
+        ],
+        "answer": 41,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1111,
+        "operands": [
+          5,
+          20,
+          4
+        ],
+        "answer": 96,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1148,
+        "operands": [
+          3,
+          18,
+          6
+        ],
+        "answer": 48,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1185,
+        "operands": [
+          5,
+          14,
+          7
+        ],
+        "answer": 63,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1222,
+        "operands": [
+          3,
+          11,
+          4
+        ],
+        "answer": 29,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1259,
+        "operands": [
+          4,
+          16,
+          8
+        ],
+        "answer": 56,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1296,
+        "operands": [
+          4,
+          19,
+          7
+        ],
+        "answer": 69,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1333,
+        "operands": [
+          5,
+          20,
+          8
+        ],
+        "answer": 92,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1370,
+        "operands": [
+          2,
+          14,
+          3
+        ],
+        "answer": 25,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1407,
+        "operands": [
+          3,
+          10,
+          5
+        ],
+        "answer": 25,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1444,
+        "operands": [
+          5,
+          10,
+          8
+        ],
+        "answer": 42,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1481,
+        "operands": [
+          4,
+          10,
+          8
+        ],
+        "answer": 32,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1518,
+        "operands": [
+          2,
+          16,
+          3
+        ],
+        "answer": 29,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1555,
+        "operands": [
+          2,
+          16,
+          8
+        ],
+        "answer": 24,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1592,
+        "operands": [
+          3,
+          12,
+          6
+        ],
+        "answer": 30,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1629,
+        "operands": [
+          5,
+          12,
+          6
+        ],
+        "answer": 54,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1666,
+        "operands": [
+          4,
+          11,
+          8
+        ],
+        "answer": 36,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "twostep",
+        "seed": 1703,
+        "operands": [
+          3,
+          17,
+          3
+        ],
+        "answer": 48,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1000,
+        "operands": [
+          205,
+          89
+        ],
+        "answer": 116,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1037,
+        "operands": [
+          151,
+          68
+        ],
+        "answer": 83,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1074,
+        "operands": [
+          193,
+          68
+        ],
+        "answer": 125,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1111,
+        "operands": [
+          154,
+          89
+        ],
+        "answer": 65,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1148,
+        "operands": [
+          162,
+          49
+        ],
+        "answer": 113,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1185,
+        "operands": [
+          221,
+          98
+        ],
+        "answer": 123,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1222,
+        "operands": [
+          126,
+          68
+        ],
+        "answer": 58,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1259,
+        "operands": [
+          226,
+          79
+        ],
+        "answer": 147,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1296,
+        "operands": [
+          197,
+          69
+        ],
+        "answer": 128,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1333,
+        "operands": [
+          225,
+          89
+        ],
+        "answer": 136,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1370,
+        "operands": [
+          93,
+          48
+        ],
+        "answer": 45,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1407,
+        "operands": [
+          147,
+          58
+        ],
+        "answer": 89,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1444,
+        "operands": [
+          223,
+          88
+        ],
+        "answer": 135,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1481,
+        "operands": [
+          207,
+          68
+        ],
+        "answer": 139,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1518,
+        "operands": [
+          92,
+          39
+        ],
+        "answer": 53,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1555,
+        "operands": [
+          193,
+          49
+        ],
+        "answer": 144,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1592,
+        "operands": [
+          161,
+          58
+        ],
+        "answer": 103,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1629,
+        "operands": [
+          197,
+          98
+        ],
+        "answer": 99,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1666,
+        "operands": [
+          228,
+          78
+        ],
+        "answer": 150,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "roundadjust",
+        "seed": 1703,
+        "operands": [
+          112,
+          69
+        ],
+        "answer": 43,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1000,
+        "operands": [
+          407,
+          418
+        ],
+        "answer": 825,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1037,
+        "operands": [
+          324,
+          264
+        ],
+        "answer": 588,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1074,
+        "operands": [
+          307,
+          196
+        ],
+        "answer": 503,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1111,
+        "operands": [
+          401,
+          456
+        ],
+        "answer": 857,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1148,
+        "operands": [
+          220,
+          383
+        ],
+        "answer": 603,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1185,
+        "operands": [
+          447,
+          270
+        ],
+        "answer": 717,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1222,
+        "operands": [
+          286,
+          157
+        ],
+        "answer": 443,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1259,
+        "operands": [
+          359,
+          317
+        ],
+        "answer": 676,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1296,
+        "operands": [
+          322,
+          429
+        ],
+        "answer": 751,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1333,
+        "operands": [
+          428,
+          456
+        ],
+        "answer": 884,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1370,
+        "operands": [
+          188,
+          276
+        ],
+        "answer": 464,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1407,
+        "operands": [
+          271,
+          126
+        ],
+        "answer": 397,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1444,
+        "operands": [
+          427,
+          125
+        ],
+        "answer": 552,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1481,
+        "operands": [
+          313,
+          148
+        ],
+        "answer": 461,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1518,
+        "operands": [
+          124,
+          332
+        ],
+        "answer": 456,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1555,
+        "operands": [
+          178,
+          342
+        ],
+        "answer": 520,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1592,
+        "operands": [
+          234,
+          192
+        ],
+        "answer": 426,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1629,
+        "operands": [
+          456,
+          186
+        ],
+        "answer": 642,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1666,
+        "operands": [
+          359,
+          169
+        ],
+        "answer": 528,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "partialsums",
+        "seed": 1703,
+        "operands": [
+          288,
+          358
+        ],
+        "answer": 646,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1000,
+        "operands": [
+          84,
+          11
+        ],
+        "answer": 924,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1037,
+        "operands": [
+          46,
+          11
+        ],
+        "answer": 506,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1074,
+        "operands": [
+          57,
+          11
+        ],
+        "answer": 627,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1111,
+        "operands": [
+          79,
+          11
+        ],
+        "answer": 869,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1148,
+        "operands": [
+          75,
+          11
+        ],
+        "answer": 825,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1185,
+        "operands": [
+          48,
+          11
+        ],
+        "answer": 528,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1222,
+        "operands": [
+          59,
+          11
+        ],
+        "answer": 649,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1259,
+        "operands": [
+          69,
+          11
+        ],
+        "answer": 759,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1296,
+        "operands": [
+          86,
+          11
+        ],
+        "answer": 946,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1333,
+        "operands": [
+          86,
+          11
+        ],
+        "answer": 946,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1370,
+        "operands": [
+          28,
+          11
+        ],
+        "answer": 308,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1407,
+        "operands": [
+          48,
+          11
+        ],
+        "answer": 528,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1444,
+        "operands": [
+          86,
+          11
+        ],
+        "answer": 946,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1481,
+        "operands": [
+          58,
+          11
+        ],
+        "answer": 638,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1518,
+        "operands": [
+          58,
+          11
+        ],
+        "answer": 638,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1555,
+        "operands": [
+          65,
+          11
+        ],
+        "answer": 715,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1592,
+        "operands": [
+          39,
+          11
+        ],
+        "answer": 429,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1629,
+        "operands": [
+          93,
+          11
+        ],
+        "answer": 1023,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1666,
+        "operands": [
+          69,
+          11
+        ],
+        "answer": 759,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "x11",
+        "seed": 1703,
+        "operands": [
+          69,
+          11
+        ],
+        "answer": 759,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1000,
+        "operands": [
+          75,
+          78
+        ],
+        "answer": 5850,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1037,
+        "operands": [
+          59,
+          48
+        ],
+        "answer": 2832,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1074,
+        "operands": [
+          56,
+          35
+        ],
+        "answer": 1960,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1111,
+        "operands": [
+          74,
+          85
+        ],
+        "answer": 6290,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1148,
+        "operands": [
+          40,
+          71
+        ],
+        "answer": 2840,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1185,
+        "operands": [
+          83,
+          49
+        ],
+        "answer": 4067,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1222,
+        "operands": [
+          52,
+          28
+        ],
+        "answer": 1456,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1259,
+        "operands": [
+          66,
+          58
+        ],
+        "answer": 3828,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1296,
+        "operands": [
+          59,
+          80
+        ],
+        "answer": 4720,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1333,
+        "operands": [
+          79,
+          85
+        ],
+        "answer": 6715,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1370,
+        "operands": [
+          34,
+          50
+        ],
+        "answer": 1700,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1407,
+        "operands": [
+          49,
+          22
+        ],
+        "answer": 1078,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1444,
+        "operands": [
+          79,
+          22
+        ],
+        "answer": 1738,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1481,
+        "operands": [
+          58,
+          26
+        ],
+        "answer": 1508,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1518,
+        "operands": [
+          21,
+          61
+        ],
+        "answer": 1281,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1555,
+        "operands": [
+          32,
+          63
+        ],
+        "answer": 2016,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1592,
+        "operands": [
+          42,
+          34
+        ],
+        "answer": 1428,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1629,
+        "operands": [
+          85,
+          33
+        ],
+        "answer": 2805,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1666,
+        "operands": [
+          66,
+          30
+        ],
+        "answer": 1980,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "lattice",
+        "seed": 1703,
+        "operands": [
+          53,
+          66
+        ],
+        "answer": 3498,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1000,
+        "operands": [
+          97,
+          98
+        ],
+        "answer": 9506,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1037,
+        "operands": [
+          95,
+          93
+        ],
+        "answer": 8835,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1074,
+        "operands": [
+          95,
+          92
+        ],
+        "answer": 8740,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1111,
+        "operands": [
+          97,
+          99
+        ],
+        "answer": 9603,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1148,
+        "operands": [
+          92,
+          97
+        ],
+        "answer": 8924,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1185,
+        "operands": [
+          99,
+          94
+        ],
+        "answer": 9306,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1222,
+        "operands": [
+          94,
+          91
+        ],
+        "answer": 8554,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1259,
+        "operands": [
+          96,
+          95
+        ],
+        "answer": 9120,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1296,
+        "operands": [
+          95,
+          98
+        ],
+        "answer": 9310,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1333,
+        "operands": [
+          98,
+          99
+        ],
+        "answer": 9702,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1370,
+        "operands": [
+          91,
+          94
+        ],
+        "answer": 8554,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1407,
+        "operands": [
+          94,
+          90
+        ],
+        "answer": 8460,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1444,
+        "operands": [
+          98,
+          90
+        ],
+        "answer": 8820,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1481,
+        "operands": [
+          95,
+          90
+        ],
+        "answer": 8550,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1518,
+        "operands": [
+          90,
+          95
+        ],
+        "answer": 8550,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1555,
+        "operands": [
+          91,
+          96
+        ],
+        "answer": 8736,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1592,
+        "operands": [
+          93,
+          91
+        ],
+        "answer": 8463,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1629,
+        "operands": [
+          99,
+          91
+        ],
+        "answer": 9009,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1666,
+        "operands": [
+          96,
+          91
+        ],
+        "answer": 8736,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      },
+      {
+        "skill": "near100",
+        "seed": 1703,
+        "operands": [
+          94,
+          96
+        ],
+        "answer": 9024,
+        "arithmeticConsistent": true,
+        "templatePass": true,
+        "reasons": []
+      }
+    ],
+    "summary": {
+      "total": 200,
+      "arithmeticConsistent": 200,
+      "templatePass": 200,
+      "bySkill": {
+        "make10": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "abacus": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "fairshare": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "breakapart": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "twostep": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "roundadjust": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "partialsums": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "x11": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "lattice": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        },
+        "near100": {
+          "n": 20,
+          "arith": 20,
+          "templ": 20
+        }
+      }
+    }
+  },
+  "live": null
+}
