@@ -4,7 +4,9 @@
 
 Built for the [Nerdy AI Hackathon](https://hackathon.nerdy.com) · prompt: *"an interactive, gamified math experience for elementary students… innovative mechanics that encourage steady progression and reward mastery of core numeracy skills."*
 
-> **Live demo:** _(URL added on deploy)_ · **Video:** _(link)_ · Works with no API key — every AI call has a deterministic fallback.
+> **Live demo:** https://math-pet-theta.vercel.app · **Video:** _(link)_ · Works with no API key — every AI call has a deterministic fallback.
+>
+> Try it: **🎯 Adaptive** picks your weakest power · **🤖 AI** generates fresh problems live · **🤔 I'm stuck** builds a ladder on demand · **🔊** for sound. URL params: `?demo=hungry` (overnight), `?adaptive=1`, `?ai=1`, `?demo=reset`.
 
 ---
 
