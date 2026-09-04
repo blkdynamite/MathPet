@@ -45,6 +45,7 @@ export function NumberPad({
             transition={{ type: "spring", stiffness: 600, damping: 20 }}
             className={`pad-key h-12 ${flash === k ? "bg-amber-200 border-numi-accent" : ""}`}
             onClick={() => press(k)}
+            aria-label={k === "clr" ? "clear" : k === "⌫" ? "backspace" : `digit ${k}`}
           >
             {k}
           </motion.button>

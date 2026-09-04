@@ -2,7 +2,7 @@
 // No test framework: prints ok / FAIL lines, exits non-zero on any failure.
 
 import { extractResults, checkRung, verifyScaffold, readingLevel, verifyGeneratedPrompt } from "../lib/verify";
-import { generateSpec, makeRng } from "../lib/generate";
+import { generateSpec, makeRng, storyTemplate } from "../lib/generate";
 import { SKILLS, emptyProgress } from "../lib/skills";
 import { pickNextSkill } from "../lib/nextProblem";
 import { Session } from "../lib/types";
@@ -143,6 +143,26 @@ for (const skill of SKILLS) {
   const a = generateSpec(skill.id, undefined, 99);
   const b = generateSpec(skill.id, undefined, 99);
   expect(`generator[${skill.id}] deterministic`, JSON.stringify(a), JSON.stringify(b));
+}
+
+// ---- storyTemplate passes the verifier for every skill × interest ----
+{
+  const interestSets = [["space"], ["animals"], ["sports"], ["gaming"], []];
+  let allOk = true;
+  for (const skill of SKILLS) {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const spec = generateSpec(skill.id, undefined, seed);
+      for (const interests of interestSets) {
+        const story = storyTemplate(spec, interests);
+        const v = verifyGeneratedPrompt(story.prompt, spec.operands, spec.answer, story.hint);
+        if (!v.ok) {
+          allOk = false;
+          console.log("  story FAIL", skill.id, seed, interests, story.prompt, v.reasons);
+        }
+      }
+    }
+  }
+  expect("every storyTemplate passes the verifier (10 skills × 5 seeds × 5 interests)", allOk, true);
 }
 
 // ---- nextProblem selector ----

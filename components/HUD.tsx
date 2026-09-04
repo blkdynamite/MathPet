@@ -19,6 +19,8 @@ export function HUD({
   onToggleAi,
   adaptiveMode,
   onToggleAdaptive,
+  muted,
+  onToggleMute,
 }: {
   petName: string;
   stage: PetStage;
@@ -36,6 +38,8 @@ export function HUD({
   onToggleAi: () => void;
   adaptiveMode: boolean;
   onToggleAdaptive: () => void;
+  muted: boolean;
+  onToggleMute: () => void;
 }) {
   const fullness = 100 - hunger;
   const hungerColor =
@@ -91,6 +95,13 @@ export function HUD({
           </button>
           <button onClick={onShop} className="chip bg-numi-coin/20 text-amber-800 font-bold">
             ⭐ {coins}
+          </button>
+          <button
+            onClick={onToggleMute}
+            className="chip bg-white text-gray-500 border border-gray-300 font-bold"
+            aria-label={muted ? "Unmute sounds" : "Mute sounds"}
+          >
+            {muted ? "🔇" : "🔊"}
           </button>
           <button
             onClick={onParent}

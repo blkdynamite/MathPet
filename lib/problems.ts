@@ -14,7 +14,7 @@ export const PROBLEMS: Problem[] = [
     skillId: "make10",
     ccss: ["2.OA.B.2", "3.NBT.A.2"],
     technique: "input",
-    prompt: "8 + 7 = ?",
+    prompt: "Sparky ate 8 berries, then 7 more. How many berries?",
     hint: "Use the make-10 trick: give 2 from the 7 to the 8 to make 10, then add what's left.",
     answer: 15,
     difficulty: 1,

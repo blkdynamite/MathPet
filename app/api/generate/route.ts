@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { generateSpec, specToProblem, GeneratedSpec } from "@/lib/generate";
+import { generateSpec, specToProblem, storyTemplate, GeneratedSpec } from "@/lib/generate";
 import { verifyGeneratedPrompt } from "@/lib/verify";
 import { SkillId } from "@/lib/skills";
 
@@ -55,6 +55,9 @@ async function wrapWithStory(
           role: "user",
           content:
             `Wrap this math in a story for a 9-year-old.\n` +
+            `SAFETY: content must be appropriate for ages 8–11 — no violence, ` +
+            `scary or romantic themes, real brands, or money beyond simple counting. ` +
+            `Warm, wholesome, encouraging.\n` +
             `Strategy: ${spec.strategy}\n` +
             `Operands (use EXACTLY these digits, in this order): ${spec.operands.join(", ")}\n` +
             `Operation: ${spec.operation}\n` +
@@ -97,7 +100,7 @@ export async function POST(req: NextRequest) {
     console.warn(
       `[generate] REJECTED live story for ${spec.skillId}: ${v.reasons.join("; ")}`
     );
-    const problem = specToProblem(spec);
+    const problem = specToProblem(spec, storyTemplate(spec, body.interests ?? []));
     return NextResponse.json({
       problem,
       source: "template",
@@ -107,6 +110,6 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const problem = specToProblem(spec);
+  const problem = specToProblem(spec, storyTemplate(spec, body.interests ?? []));
   return NextResponse.json({ problem, source: "template" });
 }
