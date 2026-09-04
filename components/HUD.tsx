@@ -17,6 +17,8 @@ export function HUD({
   canFeed,
   aiMode,
   onToggleAi,
+  adaptiveMode,
+  onToggleAdaptive,
 }: {
   petName: string;
   stage: PetStage;
@@ -32,6 +34,8 @@ export function HUD({
   canFeed: boolean;
   aiMode: boolean;
   onToggleAi: () => void;
+  adaptiveMode: boolean;
+  onToggleAdaptive: () => void;
 }) {
   const fullness = 100 - hunger;
   const hungerColor =
@@ -54,6 +58,17 @@ export function HUD({
             title="Math Powers"
           >
             ⚡ {masteredCount}/{totalPowers}
+          </button>
+          <button
+            onClick={onToggleAdaptive}
+            className={`chip font-bold ${
+              adaptiveMode
+                ? "bg-sky-500 text-white"
+                : "bg-white text-gray-500 border border-gray-300"
+            }`}
+            title={adaptiveMode ? "Adaptive selector picks the next skill" : "Switch to adaptive picking"}
+          >
+            🎯 {adaptiveMode ? "Adaptive" : "Script"}
           </button>
           <button
             onClick={onToggleAi}

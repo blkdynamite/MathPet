@@ -10,9 +10,11 @@ import { NumberPad } from "./NumberPad";
 export function QuestionCard({
   problem,
   onResult,
+  onAskHelp,
 }: {
   problem: Problem;
   onResult: (correct: boolean, userAnswer: number) => void;
+  onAskHelp: () => void;
 }) {
   const [val, setVal] = useState("");
 
@@ -74,6 +76,13 @@ export function QuestionCard({
           />
         </>
       )}
+
+      <button
+        onClick={onAskHelp}
+        className="w-full text-center text-sm text-sky-700 font-semibold py-2 rounded-xl bg-sky-50 border border-sky-100"
+      >
+        🤔 I'm stuck — help me build up
+      </button>
     </div>
   );
 }

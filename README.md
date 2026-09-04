@@ -172,20 +172,23 @@ lib/
 
 ---
 
-## Adaptive engine (designed, not in the demo)
+## Adaptive engine (`lib/nextProblem.ts`)
 
 ```
-On clean solve:                 streak++ ; progress[skill].cleanSolves++
-On scaffold or wrong:           streak = 0 ; stumble++
-If streak >= 3:                 difficulty = min(5, difficulty + 1)
-If stumble >= 2 in last 3:      difficulty = max(1, difficulty - 1)
-Next problem:  pick the lowest-mastery power at current difficulty;
-               every 4th problem, spaced-review a mastered power.
-Difficulty gates: 1 single-digit · 2 tables to 10 · 3 2×1 & simple word
-                  4 2×2 (lattice unlocks) · 5 multi-step & Vedic challenges
+Every 4th problem:              spaced-review a mastered power (rotated)
+Otherwise:                      pick the least-solved unmastered power that
+                                isn't the last or second-last skill served
+Difficulty for that skill:      skill.order + min(cleanSolves, mastery_threshold)
+Fallback (all mastered):        cycle through skills for continued practice
 ```
 
-Replaces `DEMO_ORDER`. Problem *numbers* are generated in code per gate; the LLM writes the story around the child's interests.
+Live in the app — toggle **🎯 Adaptive** in the HUD (or `?adaptive=1`). Off by default so the video's scripted sequence still plays for a recording; on when a judge clicks around. A small "Adaptive: {reason}" footer shows the selector's stated reasoning under each question.
+
+**Composable with AI mode:** turn on both toggles and the selector picks the skill+difficulty while `/api/generate` writes the story for those numbers — real adaptive problems generated live and verified before display.
+
+### "I'm stuck" button
+
+Every question has a **🤔 I'm stuck — help me build up** button. Tapping it runs the same scaffold ladder as a wrong answer, tagged `help_requested`, with a warmer diagnosis. Help-seeking is tracked separately so it shows up in the Parent Note as persistence, not a defect.
 
 ## Built vs. planned
 
@@ -196,6 +199,8 @@ Replaces `DEMO_ORDER`. Problem *numbers* are generated in code per gate; the LLM
 | Misconception classifier → targeted scaffold | ✅ live + fallback | wider taxonomy, learned from tutor labels |
 | Scaffold verifier + `npm run eval` | ✅ 21/21 unit tests, 0 failed rungs across 16 fallbacks | tool-use JSON schema, live-eval CI gate |
 | Deterministic generation + LLM story via tool-use | ✅ 10 generators, 200/200 offline, live rejects fall back to safe template | wider misconception taxonomy, spaced review |
+| Adaptive selector (weakest-power, spaced review) | ✅ `lib/nextProblem.ts` with 5 unit tests, HUD toggle | server-side, per-account |
+| "I'm stuck" button (help-seeking as a first-class signal) | ✅ tagged `help_requested`, tracked in telemetry | teacher-facing help-rate reporting |
 | Hunger / daily quest / streak | ✅ | push notification at hunger 60% |
 | Star Coins + Pet Shop | ✅ | inventory service |
 | Parent Note | ✅ real LLM over real device telemetry | weekly email |

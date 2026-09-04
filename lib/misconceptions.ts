@@ -14,6 +14,7 @@ export type Misconception =
   | "forgot_to_carry"
   | "skipped_a_step"
   | "digit_reversal"
+  | "help_requested"
   | "unknown";
 
 export const MISCONCEPTION_LABELS: Record<Misconception, string> = {
@@ -25,6 +26,7 @@ export const MISCONCEPTION_LABELS: Record<Misconception, string> = {
   forgot_to_carry: "Forgot to carry",
   skipped_a_step: "Skipped a step in a multi-step problem",
   digit_reversal: "Reversed the digits",
+  help_requested: "Asked for help",
   unknown: "Unclear error",
 };
 
@@ -42,6 +44,7 @@ export const MISCONCEPTION_DIAGNOSIS: Record<Misconception, string> = {
   forgot_to_carry: "You're close — the middle number was 10 or more, so we need to carry the 1.",
   skipped_a_step: "This is a two-step problem. Looks like one step got skipped.",
   digit_reversal: "The digits got flipped! Let's check which one goes first.",
+  help_requested: "Great call — asking for help is a superpower. Let's build up together.",
   unknown: "Not quite — let's build up to it together.",
 };
 

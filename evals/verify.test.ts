@@ -3,7 +3,9 @@
 
 import { extractResults, checkRung, verifyScaffold, readingLevel, verifyGeneratedPrompt } from "../lib/verify";
 import { generateSpec, makeRng } from "../lib/generate";
-import { SKILLS } from "../lib/skills";
+import { SKILLS, emptyProgress } from "../lib/skills";
+import { pickNextSkill } from "../lib/nextProblem";
+import { Session } from "../lib/types";
 
 type Case = { name: string; got: unknown; want: unknown };
 const cases: Case[] = [];
@@ -141,6 +143,46 @@ for (const skill of SKILLS) {
   const a = generateSpec(skill.id, undefined, 99);
   const b = generateSpec(skill.id, undefined, 99);
   expect(`generator[${skill.id}] deterministic`, JSON.stringify(a), JSON.stringify(b));
+}
+
+// ---- nextProblem selector ----
+{
+  // Empty state → picks the lowest-order unmastered power (make10, order 1).
+  const p = emptyProgress();
+  const pick = pickNextSkill(p, []);
+  expect("selector picks make10 first from empty state", pick.skillId, "make10");
+}
+{
+  // If make10 has 1 clean solve, selector prefers a different unmastered power.
+  const p = emptyProgress();
+  p.make10.cleanSolves = 1;
+  p.make10.attempts = 1;
+  const pick = pickNextSkill(p, [
+    { ts: 0, problemId: "ab-3", skillId: "make10", concept: "", ccss: [], technique: "input", correct: true, firstTry: true, scaffoldUsed: false, timeSec: 10 } as Session,
+  ]);
+  expect("selector does not repeat last skill", pick.skillId === "make10", false);
+}
+{
+  // 4th problem with a mastered power → spaced review kicks in.
+  const p = emptyProgress();
+  p.make10.cleanSolves = 2;
+  const sessions = Array.from({ length: 4 }, (_, i) => ({
+    ts: i, problemId: `x${i}`, skillId: "abacus", concept: "", ccss: [],
+    technique: "input", correct: true, firstTry: true, scaffoldUsed: false, timeSec: 10,
+  })) as Session[];
+  const pick = pickNextSkill(p, sessions);
+  expect("selector triggers spaced review every 4th", pick.reason.startsWith("spaced review"), true);
+  expect("spaced review picks a mastered power", pick.skillId, "make10");
+}
+{
+  // Selector avoids the previous TWO skills so we don't ping-pong.
+  const p = emptyProgress();
+  const sessions = [
+    { ts: 1, problemId: "a", skillId: "abacus", concept: "", ccss: [], technique: "input", correct: true, firstTry: true, scaffoldUsed: false, timeSec: 10 },
+    { ts: 2, problemId: "b", skillId: "make10", concept: "", ccss: [], technique: "input", correct: true, firstTry: true, scaffoldUsed: false, timeSec: 10 },
+  ] as Session[];
+  const pick = pickNextSkill(p, sessions);
+  expect("selector avoids last two skills", pick.skillId !== "abacus" && pick.skillId !== "make10", true);
 }
 
 // ---- report ----
