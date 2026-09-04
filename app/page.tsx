@@ -15,6 +15,7 @@ import {
 } from "@/lib/skills";
 import { classify, Misconception } from "@/lib/misconceptions";
 import { pickNextSkill, pickStaticProblem } from "@/lib/nextProblem";
+import { playCorrect, playLevelUp, playWrong } from "@/lib/sound";
 import { Pet, PetMood } from "@/components/Pet";
 import { HUD } from "@/components/HUD";
 import { QuestionCard } from "@/components/QuestionCard";
@@ -36,6 +37,7 @@ type SaveState = {
   sessions: Session[];
   lastFedAt: number;      // ms epoch
   fedToday: number;       // correct answers since last "hungry" reset
+  muted?: boolean;
 };
 
 const LS_KEY = "numi_state_v2";
@@ -297,6 +299,8 @@ export default function Home() {
 
       setScaffold(null);
       setMood("happy");
+      if (justMastered || evolved) playLevelUp(state!.muted);
+      else playCorrect(state!.muted);
       say(session.scaffoldUsed ? "You worked it out! 💪" : "Yes! 🎉");
 
       const skill = getSkill(skillId);
@@ -336,6 +340,7 @@ export default function Home() {
     usedScaffold.current = true;
 
     setMood("sad");
+    if (overrideMiscon !== "help_requested") playWrong(state!.muted);
     setState((s) => (s ? { ...s, streak: 0 } : s));
     say(overrideMiscon === "help_requested" ? "Good call — let's build up!" : "Hmm, let's build up to it!");
     setScaffoldLoading(true);
@@ -416,6 +421,8 @@ export default function Home() {
         onToggleAi={() => setAiMode((v) => !v)}
         adaptiveMode={adaptiveMode}
         onToggleAdaptive={() => setAdaptiveMode((v) => !v)}
+        muted={!!state.muted}
+        onToggleMute={() => setState((s) => (s ? { ...s, muted: !s.muted } : s))}
       />
 
       <div

@@ -145,7 +145,9 @@ function genRoundAdjust(rng: Rng): GeneratedSpec {
     technique: "input",
     difficulty: 3,
     templatePrompt: `${a} − ${b} = ?`,
-    templateHint: `Round ${b} up to ${b + (10 - (b % 10))}, subtract, then adjust.`,
+    // Deliberately no specific rounded value here — stating it can coincide
+    // with the answer and leak it (caught by the verifier eval).
+    templateHint: `Round the second number up to the nearest ten, subtract, then adjust back.`,
   };
 }
 
@@ -247,6 +249,65 @@ export function generateSpec(skillId: SkillId, difficulty?: number, seed?: numbe
     case "lattice": return genLattice(rng);
     case "near100": return genNear100(rng);
   }
+}
+
+// ---- Deterministic story templates -------------------------------------
+// When the LLM is unavailable (no key, timeout, or a rejected story), we
+// still want a real word problem — not a bare equation — using the child's
+// interests. These are code-generated, so they always pass the verifier:
+// operands appear in order and the answer never leaks.
+type Theme = { item: string; place: string };
+const THEMES: Record<string, Theme> = {
+  space: { item: "space rocks", place: "asteroids" },
+  animals: { item: "acorns", place: "nests" },
+  sports: { item: "balls", place: "hoops" },
+  gaming: { item: "coins", place: "chests" },
+  art: { item: "stickers", place: "boxes" },
+  music: { item: "notes", place: "songs" },
+  generic: { item: "stars", place: "jars" },
+};
+
+export function storyTemplate(
+  spec: GeneratedSpec,
+  interests: string[] = []
+): { prompt: string; hint: string } {
+  const key = interests.find((i) => THEMES[i]) ?? "generic";
+  const { item, place } = THEMES[key];
+  const [a, b, c] = spec.operands;
+  let prompt: string;
+  switch (spec.skillId) {
+    case "make10":
+      prompt = `Sparky found ${a} ${item}, then ${b} more. How many ${item} now?`;
+      break;
+    case "partialsums":
+      prompt = `One team has ${a} ${item} and the other has ${b}. How many together?`;
+      break;
+    case "fairshare":
+      prompt = `Sparky shares ${a} ${item} into ${b} ${place}. How many in each?`;
+      break;
+    case "breakapart":
+      prompt = `${a} ${place} each hold ${b} ${item}. How many ${item} in all?`;
+      break;
+    case "twostep":
+      prompt = `${a} ${place} hold ${b} ${item} each. Sparky gives away ${c}. How many are left?`;
+      break;
+    case "roundadjust":
+      prompt = `Sparky had ${a} ${item} and used ${b}. How many ${item} are left?`;
+      break;
+    case "x11":
+      prompt = `Each of ${a} ${place} holds 11 ${item}. How many ${item} in total?`;
+      break;
+    case "lattice":
+      prompt = `${a} ${place} each hold ${b} ${item}. How many ${item} in total?`;
+      break;
+    case "near100":
+      prompt = `${a} shelves each hold ${b} ${item}. How many ${item} in total?`;
+      break;
+    case "abacus":
+    default:
+      prompt = spec.templatePrompt; // "Build 23 on the abacus."
+  }
+  return { prompt, hint: spec.templateHint };
 }
 
 // Convert a spec + optional LLM story into a runtime Problem.
