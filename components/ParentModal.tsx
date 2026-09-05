@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { Session } from "@/lib/types";
 import { Aggregate } from "@/lib/telemetry";
+import { Modal } from "./Modal";
 
 type Brief = {
   headline: string;
@@ -31,37 +31,42 @@ export function ParentModal({
   const [loadingT, setLoadingT] = useState(true);
 
   useEffect(() => {
+    const ctrl = new AbortController();
     const body = JSON.stringify({ sessions, petName, studentName: "Your student" });
-    fetch("/api/parent-summary", { method: "POST", headers: { "content-type": "application/json" }, body })
-      .then((r) => r.json())
+    fetch("/api/parent-summary", { method: "POST", headers: { "content-type": "application/json" }, body, signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
+        if (!d) return;
         setSummary(d.summary);
         setAgg(d.aggregate);
         setSource(d.source);
       })
+      .catch(() => {})
       .finally(() => setLoadingP(false));
-    fetch("/api/tutor-brief", { method: "POST", headers: { "content-type": "application/json" }, body })
-      .then((r) => r.json())
-      .then((d) => setBrief(d.brief))
+    fetch("/api/tutor-brief", { method: "POST", headers: { "content-type": "application/json" }, body, signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setBrief(d.brief))
+      .catch(() => {})
       .finally(() => setLoadingT(false));
+    return () => ctrl.abort();
   }, [sessions, petName]);
 
   const weakest = agg?.weakest?.name ?? "division";
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-2"
-    >
-      <motion.div
-        initial={{ y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="w-full max-w-md bg-white rounded-3xl p-4 shadow-2xl max-h-[92vh] overflow-y-auto"
-      >
+    <Modal onClose={onClose} labelledBy="parent-title" paddedFooter>
+      <div className="p-4">
+        {/* Screen-reader-only title so aria-labelledby has a target even though
+            the visible tab UI acts as the heading. */}
+        <h2 id="parent-title" className="sr-only">
+          For parents and tutors
+        </h2>
+
         <div className="flex items-center justify-between mb-2">
-          <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+          <div className="flex gap-1 bg-gray-100 rounded-xl p-1" role="tablist">
             <button
+              role="tab"
+              aria-selected={tab === "parent"}
               onClick={() => setTab("parent")}
               className={`px-3 py-1.5 rounded-lg text-sm font-bold ${
                 tab === "parent" ? "bg-white shadow text-gray-900" : "text-gray-500"
@@ -70,6 +75,8 @@ export function ParentModal({
               👨‍👩‍👧 For Parents
             </button>
             <button
+              role="tab"
+              aria-selected={tab === "tutor"}
               onClick={() => setTab("tutor")}
               className={`px-3 py-1.5 rounded-lg text-sm font-bold ${
                 tab === "tutor" ? "bg-white shadow text-gray-900" : "text-gray-500"
@@ -78,7 +85,7 @@ export function ParentModal({
               🎓 Tutor Brief
             </button>
           </div>
-          <button onClick={onClose} className="text-2xl px-2 text-gray-500">
+          <button onClick={onClose} className="text-2xl px-2 text-gray-500" aria-label="Close parent view">
             ✕
           </button>
         </div>
@@ -93,7 +100,11 @@ export function ParentModal({
         )}
 
         {tab === "parent" ? (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 min-h-[160px] text-sm text-gray-700 leading-relaxed">
+          <div
+            className="bg-amber-50 border border-amber-200 rounded-2xl p-4 min-h-[160px] text-sm text-gray-700 leading-relaxed"
+            role="tabpanel"
+            aria-live="polite"
+          >
             {loadingP ? (
               <span className="animate-pulse text-gray-500">{petName} is writing your note…</span>
             ) : (
@@ -101,7 +112,11 @@ export function ParentModal({
             )}
           </div>
         ) : (
-          <div className="bg-violet-50 border border-violet-200 rounded-2xl p-4 min-h-[160px] text-sm text-gray-800 space-y-2">
+          <div
+            className="bg-violet-50 border border-violet-200 rounded-2xl p-4 min-h-[160px] text-sm text-gray-800 space-y-2"
+            role="tabpanel"
+            aria-live="polite"
+          >
             {loadingT || !brief ? (
               <span className="animate-pulse text-gray-500">Preparing pre-session brief…</span>
             ) : (
@@ -124,7 +139,7 @@ export function ParentModal({
         )}
 
         <a
-          href={`https://www.varsitytutors.com/elementary_math-tutors`}
+          href="https://www.varsitytutors.com/elementary_math-tutors"
           target="_blank"
           rel="noreferrer"
           className="mt-3 block w-full text-center py-3 rounded-2xl bg-numi-accent text-white font-bold shadow"
@@ -137,8 +152,8 @@ export function ParentModal({
             ? `Generated from ${sessions.length} real attempts on this device.`
             : "Showing seed data — play a few rounds to see your own report."}
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </Modal>
   );
 }
 

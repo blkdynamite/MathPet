@@ -38,12 +38,17 @@ type SaveState = {
   lastFedAt: number;      // ms epoch
   fedToday: number;       // correct answers since last "hungry" reset
   muted?: boolean;
+  /** Schema version. Bump when SaveState shape changes; older saves are
+   *  migrated forward in `migrate()` rather than white-screening a returning
+   *  child on the first correct answer. */
+  version?: number;
 };
 
 type Phase = "answering" | "celebrating" | "scaffolding" | "loading";
 const EMPTY_INTERESTS: string[] = [];
 
 const LS_KEY = "numi_state_v2";
+const CURRENT_VERSION = 2;
 const CUPCAKE_COST = 20;
 // Feed modal fires after the 2nd correct answer, then every 3rd after that (2, 5, 8…).
 const shouldNudgeAt = (streak: number) => streak === 2 || (streak > 2 && (streak - 2) % 3 === 0);
@@ -51,11 +56,53 @@ const HUNGER_FULL_AFTER_MS = 8 * 3600 * 1000; // starving after 8h away
 const FEED_PER_CORRECT = 34;                   // 3 correct answers = full
 const QUEST_SIZE = 3;
 
+// Deep-merge the persisted blob into a fresh shape. Adding a Math Power
+// used to throw `Cannot read cleanSolves of undefined` inside the correct-
+// answer handler on returning users; now every field is either present or
+// filled from `fresh()`, and unknown keys are dropped. Invalid blobs (parse
+// errors, wrong types) also return null → the app falls through to onboarding
+// instead of crashing.
+function migrate(raw: unknown): SaveState | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Partial<SaveState> & Record<string, unknown>;
+  if (typeof r.name !== "string") return null;
+  const seed = fresh(r.name, Array.isArray(r.interests) ? (r.interests as string[]) : []);
+  const progress = { ...seed.progress };
+  const rp = (r.progress ?? {}) as Record<string, unknown>;
+  for (const k of Object.keys(progress) as Array<keyof typeof progress>) {
+    const v = rp[k as string];
+    if (v && typeof v === "object") {
+      const src = v as Partial<(typeof progress)[typeof k]>;
+      progress[k] = {
+        cleanSolves: Math.max(0, Number(src.cleanSolves ?? 0) | 0),
+        attempts: Math.max(0, Number(src.attempts ?? 0) | 0),
+        scaffolds: Math.max(0, Number(src.scaffolds ?? 0) | 0),
+      };
+    }
+  }
+  return {
+    ...seed,
+    name: r.name,
+    interests: Array.isArray(r.interests) ? (r.interests as string[]) : seed.interests,
+    coins: Number.isFinite(r.coins as number) ? (r.coins as number) : seed.coins,
+    streak: Number.isFinite(r.streak as number) ? (r.streak as number) : seed.streak,
+    owned: Array.isArray(r.owned) ? (r.owned as string[]) : seed.owned,
+    equipped: typeof r.equipped === "string" ? r.equipped : null,
+    progress,
+    sessions: Array.isArray(r.sessions) ? (r.sessions as SaveState["sessions"]) : seed.sessions,
+    lastFedAt: Number.isFinite(r.lastFedAt as number) ? (r.lastFedAt as number) : seed.lastFedAt,
+    fedToday: Number.isFinite(r.fedToday as number) ? (r.fedToday as number) : seed.fedToday,
+    muted: !!r.muted,
+    version: CURRENT_VERSION,
+  };
+}
+
 function loadState(): SaveState | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    return migrate(JSON.parse(raw));
   } catch {
     return null;
   }
@@ -77,6 +124,7 @@ function fresh(name: string, interests: string[]): SaveState {
     sessions: [],
     lastFedAt: Date.now(),
     fedToday: 0,
+    version: CURRENT_VERSION,
   };
 }
 

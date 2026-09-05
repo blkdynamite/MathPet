@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { SHOP } from "@/lib/shop";
+import { Modal } from "./Modal";
 
 export type NudgeReason = "streak" | "levelup";
 
@@ -18,7 +19,7 @@ export function RewardNudge({
   petName: string;
   coins: number;
   streak: number;
-  hunger: number; // 0 full … 100 starving
+  hunger: number;
   onFeed: (itemId: string) => void;
   onShop: () => void;
   onDismiss: () => void;
@@ -32,24 +33,22 @@ export function RewardNudge({
   const fullness = 100 - hunger;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-3"
-    >
-      <motion.div
-        initial={{ y: 30, scale: 0.92, opacity: 0 }}
-        animate={{ y: 0, scale: 1, opacity: 1 }}
-        className="w-full max-w-sm bg-white rounded-3xl shadow-2xl border-4 border-amber-300 p-5 text-center"
-      >
-        <div className="text-2xl font-bold text-numi-accent">{title}</div>
+    <Modal onClose={onDismiss} labelledBy="reward-title">
+      <div className="bg-white border-4 border-amber-300 rounded-3xl p-5 text-center">
+        <div id="reward-title" className="text-2xl font-bold text-numi-accent">{title}</div>
         <div className="text-sm text-gray-700 mt-1 mb-3">{body}</div>
 
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-[10px] font-semibold text-gray-500 w-10 text-left">
+          <span className="text-xs font-semibold text-gray-600 w-14 text-left">
             {hunger >= 70 ? "Hungry" : hunger >= 40 ? "Peckish" : "Full"}
           </span>
-          <div className="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden"
+            role="progressbar"
+            aria-valuenow={fullness}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
             <div
               className={`h-full ${hunger >= 70 ? "bg-red-400" : hunger >= 40 ? "bg-amber-400" : "bg-emerald-400"}`}
               style={{ width: `${fullness}%` }}
@@ -66,11 +65,12 @@ export function RewardNudge({
                 whileTap={{ scale: 0.92 }}
                 onClick={() => can && onFeed(f.id)}
                 disabled={!can}
-                className={`rounded-2xl border-2 p-2 flex flex-col items-center gap-0.5 ${
+                className={`rounded-2xl border-2 p-2 flex flex-col items-center gap-0.5 min-h-[88px] ${
                   can ? "border-emerald-300 bg-emerald-50" : "border-gray-200 bg-gray-50 opacity-50"
                 }`}
+                aria-label={`Feed ${f.name} for ${f.price} coins`}
               >
-                <span className="text-3xl">{f.emoji}</span>
+                <span className="text-3xl" aria-hidden="true">{f.emoji}</span>
                 <span className="text-xs font-bold">{f.name}</span>
                 <span className="text-[10px] text-gray-500">{f.effect}</span>
                 <span className="text-xs font-bold text-amber-700">⭐ {f.price}</span>
@@ -93,7 +93,7 @@ export function RewardNudge({
             Keep practicing
           </button>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </Modal>
   );
 }

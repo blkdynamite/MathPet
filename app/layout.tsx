@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Fredoka } from "next/font/google";
+import { MotionProvider } from "@/components/MotionProvider";
 
 // Self-hosted + preloaded by Next; replaces a CSS @import that browsers were
 // silently discarding (it sat after other rules), so the app had been
@@ -27,7 +28,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={fredoka.variable}>
-      <body>{children}</body>
+      <body>
+        <MotionProvider>{children}</MotionProvider>
+      </body>
     </html>
   );
 }

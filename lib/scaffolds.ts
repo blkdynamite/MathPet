@@ -18,13 +18,13 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
     encouragement: "Let's build the number one place value at a time.",
     scaffold: [
       {
-        question: "First, in the ONES column, how many bottom beads (each worth 1) do you slide up to show 3?",
+        question: "First, the ONES column. Each bottom bead is worth 1, so 1 + 1 + 1 = ?",
         answer: 3,
         technique_note: "3 ones = 3 bottom beads. No need for the top 5-bead yet.",
       },
       {
-        question: "Now the TENS column: each bottom bead there is worth 10. How many bottom beads for 20?",
-        answer: 2,
+        question: "Now the TENS column. Each bottom bead there is worth 10, so 10 + 10 = ?",
+        answer: 20,
         technique_note: "20 = 2 tens.",
       },
     ],
@@ -35,12 +35,12 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
     encouragement: "Big top bead = 5. It saves you from sliding 5 little beads.",
     scaffold: [
       {
-        question: "In the ONES: pull down the top 5-bead. How many more 1-beads do you add to reach 7?",
+        question: "In the ONES: the top 5-bead is worth 5. To reach 7, we add 5 + ? = 7",
         answer: 2,
         technique_note: "5 + 2 = 7. That's the trick.",
       },
       {
-        question: "In the TENS: how many bottom beads (each worth 10) do you need to make 40?",
+        question: "In the TENS: each bottom bead is worth 10. Count them for 40: 10 × ? = 40",
         answer: 4,
         technique_note: "40 = 4 tens.",
       },
@@ -52,7 +52,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
     encouragement: "Turn one number into a friendly 10, then add what's left.",
     scaffold: [
       {
-        question: "8 wants to become 10. How many more does 8 need?",
+        question: "8 wants to become 10. Fill in: 8 + ? = 10",
         answer: 2,
         technique_note: "8 + 2 = 10. That 2 comes out of the 7.",
       },
@@ -69,7 +69,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
     encouragement: "Give a little from one number to make the other a 10.",
     scaffold: [
       {
-        question: "9 wants to be 10. How many more does 9 need?",
+        question: "9 wants to be 10. Fill in: 9 + ? = 10",
         answer: 1,
         technique_note: "Take that 1 out of the 6.",
       },
@@ -93,7 +93,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "This sum is going to sit in the MIDDLE of the answer.",
       },
       {
-        question: "Now 'drop' that sum between the 2 and the 3. What 3-digit number do you get?",
+        question: "Now 'drop' that sum between the 2 and the 3. 200 + 50 + 3 = ?",
         answer: 253,
         technique_note: "2 _ 3 with 5 in the middle.",
       },
@@ -110,7 +110,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
         technique_note: "That 9 goes in the middle.",
       },
       {
-        question: "Drop the 9 between the 3 and 6. What number is that?",
+        question: "Drop the 9 between the 3 and 6. 300 + 90 + 6 = ?",
         answer: 396,
         technique_note: "3 _ 6 with 9 in the middle.",
       },
@@ -194,7 +194,7 @@ export const SCAFFOLDS: Record<string, Scaffold> = {
     encouragement: "Skip-count by 8s until you hit 72.",
     scaffold: [
       {
-        question: "Skip-count: 8, 16, 24, 32, 40, 48, 56, 64, 72. How many numbers did you say?",
+        question: "Skip-count by 8: 8, 16, 24, 32, 40, 48, 56, 64, 72. That's 72 ÷ 8 = ?",
         answer: 9,
         technique_note: "Each 'skip' is one group of 8.",
       },
