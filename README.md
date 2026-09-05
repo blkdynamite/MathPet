@@ -153,6 +153,12 @@ evals/
 
 ---
 
+## v2: onboarding diagnostic — telling "can't read the problem" from "can't do the math"
+
+Most children who "aren't good at word problems" can do the arithmetic; they fail the translation from words to an operation. Today Numi can't tell those children apart from ones with a concept gap, so it gives both the same scaffold. The v2 design is a six-minute "Sparky gets to know you" ritual at onboarding built on **matched pairs**: every item is one code-generated `GeneratedSpec` rendered as a bare equation, as a story, and as a no-computing "which operation?" schema item — so the only variable between forms is the form. The resulting `LearnerProfile` sets each power's starting difficulty, chooses bare-first vs. story presentation, turns on an Operation Picker step for operation-selection deficits, makes the scaffold's first rung the bare form for translation gaps, and gives the Tutor Brief a "translation vs. computation" line a tutor can act on in the first minute. It is re-estimated continuously by serving one problem in five in the other form during normal play, and it is testable offline against simulated learners with known deficits.
+
+Full spec, sub-cause probes, flow, data model, and effort: **[`docs/DIAGNOSTIC.md`](docs/DIAGNOSTIC.md)**.
+
 ## Known gaps
 
 From an adversarial review I ran against this repo before submitting. Fixed items are marked; the rest are the honest to-do list.
@@ -194,4 +200,5 @@ From an adversarial review I ran against this repo before submitting. Fixed item
 | Parent Note + Tutor Brief | ✅ real LLM over real device telemetry | weekly email; injected into the Live Learning Platform pre-session |
 | Guardrails: zod, rate limit, budget, usage logs | ✅ in-process | KV-backed |
 | Evals | ✅ offline; live pass wired, not run | CI gate on live pass rate |
+| Onboarding diagnostic (matched-pair bare/story/schema items → learner profile → difficulty, style, scaffold strategy, tutor line) | 📋 designed — [`docs/DIAGNOSTIC.md`](docs/DIAGNOSTIC.md) | Phase A MVP ≈ half a day; full ≈ 3 days |
 | Auth / multi-device / Study Plan sync | ❌ | Supabase → Nerdy |
