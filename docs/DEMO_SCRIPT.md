@@ -16,7 +16,7 @@ Record on the live site (`https://math-pet-theta.vercel.app/?demo=reset`) or loc
 
 ## Engineer's cut (extra 20s, for the hiring-team audience)
 
-Splice this in after the scaffold beat if the audience is technical:
+Splice this in after the scaffold beat if the audience is technical. Load the page with `?debug=1` first — the 🎯 Adaptive and 🤖 AI toggles and the provenance footers are hidden from the kid surface by default:
 
 | On screen | Voiceover |
 |---|---|

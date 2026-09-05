@@ -128,10 +128,39 @@ export type RungCheck =
   | { status: "unverified"; reason: string }
   | { status: "failed"; expected: number; found: number[] };
 
+// The expression that the rung is actually ASKING is the one immediately
+// before its question mark ("12 × 5 = ?"). If such an expression exists it is
+// authoritative — a parenthetical elsewhere ("Remember: 5 + 5 = 10") must not
+// be allowed to "verify" a wrong answer. Only when there is no explicit
+// expression before the '?' do we fall back to any extracted result (word
+// patterns like "how many groups of 6 fit in 24?").
+function askedValue(question: string): number | null {
+  const q = question.indexOf("?");
+  if (q === -1) return null;
+  const prefix = normalize(question.slice(0, q));
+  const expr = /(\d+(?:\.\d+)?(?:\s*[+\-*/]\s*\d+(?:\.\d+)?)+)\s*=?\s*$/;
+  const m = expr.exec(prefix);
+  if (!m) return null;
+  try {
+    const tokens = m[1].replace(/\s/g, "").match(/\d+(?:\.\d+)?|[+\-*/]/g);
+    if (!tokens) return null;
+    const v = evalTokens(tokens);
+    return Number.isFinite(v) ? v : null;
+  } catch {
+    return null;
+  }
+}
+
 export function checkRung(question: string, answer: number): RungCheck {
+  const tol = 1e-9;
+  const asked = askedValue(question);
+  if (asked !== null) {
+    return Math.abs(asked - answer) < tol
+      ? { status: "verified", found: [asked] }
+      : { status: "failed", expected: answer, found: [asked] };
+  }
   const found = extractResults(question);
   if (found.length === 0) return { status: "unverified", reason: "no arithmetic extracted" };
-  const tol = 1e-9;
   if (found.some((v) => Math.abs(v - answer) < tol)) return { status: "verified", found };
   return { status: "failed", expected: answer, found };
 }

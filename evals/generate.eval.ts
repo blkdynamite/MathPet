@@ -17,7 +17,9 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import Anthropic from "@anthropic-ai/sdk";
+// Live pass uses the production prompt, tool schema, and client helper.
+import { callTool } from "../lib/llm";
+import { STORY_SYSTEM, STORY_TOOL, buildStoryUser } from "../lib/prompts";
 import { generateSpec, GeneratedSpec } from "../lib/generate";
 import { verifyGeneratedPrompt } from "../lib/verify";
 import { SKILLS, SkillId } from "../lib/skills";
@@ -104,19 +106,6 @@ type LiveRow = {
   latencyMs: number;
 };
 
-const STORY_TOOL = {
-  name: "emit_word_problem",
-  description: "Emit a short story word-problem using the given operands.",
-  input_schema: {
-    type: "object" as const,
-    properties: {
-      prompt: { type: "string" as const },
-      hint: { type: "string" as const },
-    },
-    required: ["prompt", "hint"],
-  },
-};
-
 const INTEREST_SETS: string[][] = [
   ["space"],
   ["animals", "sports"],
@@ -124,45 +113,23 @@ const INTEREST_SETS: string[][] = [
 ];
 
 async function callLive(
-  client: Anthropic,
   spec: GeneratedSpec,
   interests: string[]
-): Promise<{ prompt: string; hint: string; latencyMs: number } | null> {
-  const t0 = Date.now();
-  try {
-    const msg = await client.messages.create({
-      model: "claude-haiku-4-5",
-      max_tokens: 300,
-      tools: [STORY_TOOL],
-      tool_choice: { type: "tool", name: "emit_word_problem" },
-      messages: [
-        {
-          role: "user",
-          content:
-            `Wrap this math in a story for a 9-year-old.\n` +
-            `Strategy: ${spec.strategy}\n` +
-            `Operands (use EXACTLY these digits, in this order): ${spec.operands.join(", ")}\n` +
-            `Operation: ${spec.operation}\n` +
-            `Interests: ${interests.join(", ")}\n\n` +
-            `Do NOT include the answer (${spec.answer}) in prompt or hint.\n` +
-            `Sentence ≤ 20 words. Word ≤ 12 chars.`,
-        },
-      ],
-    });
-    const latencyMs = Date.now() - t0;
-    const tool = msg.content.find((b: any) => b.type === "tool_use");
-    if (!tool) return null;
-    const input = (tool as any).input as { prompt?: string; hint?: string };
-    if (!input?.prompt || !input?.hint) return null;
-    return { prompt: input.prompt, hint: input.hint, latencyMs };
-  } catch {
-    return null;
-  }
+): Promise<{ prompt: string; hint: string; latencyMs: number } | { reason: string; latencyMs: number }> {
+  const r = await callTool<{ prompt?: string; hint?: string }>({
+    system: STORY_SYSTEM,
+    user: buildStoryUser(spec, interests),
+    tool: STORY_TOOL,
+    maxTokens: 300,
+    timeoutMs: 8000,
+  });
+  if (!r.ok) return { reason: r.reason, latencyMs: r.latencyMs };
+  if (!r.value?.prompt || !r.value?.hint) return { reason: "malformed tool input", latencyMs: r.latencyMs };
+  return { prompt: r.value.prompt, hint: r.value.hint, latencyMs: r.latencyMs };
 }
 
 async function runLive(): Promise<{ rows: LiveRow[]; latency: { p50: number; p95: number; avg: number } } | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const rows: LiveRow[] = [];
   const latencies: number[] = [];
   const SEEDS_LIVE = [7, 42, 123];
@@ -171,10 +138,11 @@ async function runLive(): Promise<{ rows: LiveRow[]; latency: { p50: number; p95
     for (const seed of SEEDS_LIVE) {
       const interests = INTEREST_SETS[seed % INTEREST_SETS.length];
       const spec = generateSpec(skill.id, undefined, seed);
-      const out = await callLive(client, spec, interests);
+      const res = await callLive(spec, interests);
+      const out = "prompt" in res ? res : null;
       const v = out
         ? verifyGeneratedPrompt(out.prompt, spec.operands, spec.answer, out.hint)
-        : { ok: false, reasons: ["no LLM response"] } as any;
+        : { ok: false, reasons: [`no usable model output (${(res as { reason: string }).reason})`] };
       rows.push({
         skill: skill.id,
         interests,

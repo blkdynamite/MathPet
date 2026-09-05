@@ -1,16 +1,16 @@
 # Numi 🐾 — the between-sessions layer
 
-**Math their pet learned first.** An AI pet-care game for grades 3–5 that turns two tutoring sessions a week into seven days of engagement — and hands the human tutor a brief before every live lesson.
+**Math their pet learned first.** An AI pet-care game for grades 3–5 that turns two tutoring sessions a week into seven days of practice — and hands the human tutor a brief before every live lesson.
 
 Built for the [Nerdy AI Hackathon](https://hackathon.nerdy.com) · prompt: *"an interactive, gamified math experience for elementary students… innovative mechanics that encourage steady progression and reward mastery of core numeracy skills."*
 
-> **Live demo:** https://math-pet-theta.vercel.app · **Video:** _(link)_ · Works with no API key — every AI call has a deterministic fallback.
+> **Live demo:** https://math-pet-theta.vercel.app · **Video:** _(link)_ · Runs with no API key — every AI call has a deterministic fallback.
 >
-> Try it: **🎯 Adaptive** picks your weakest power · **🤖 AI** generates fresh problems live · **🤔 I'm stuck** builds a ladder on demand · **🔊** for sound. URL params: `?demo=hungry` (overnight), `?adaptive=1`, `?ai=1`, `?demo=reset`.
+> Kid surface: solve, get stuck (🤔), feed, shop, powers (⚡), parent/tutor view (👨‍👩‍👧). Judge/dev surface: add `?debug=1` for the 🎯 Adaptive and 🤖 AI toggles and provenance footers; `?demo=hungry` simulates coming back the next morning; `?demo=reset` wipes local state.
 
 ---
 
-## The problem we're actually solving
+## The problem
 
 Nerdy's consumer business is 84% of revenue and Learning Memberships fell 5% YoY to 29,100 (Q2 2026). A membership is ~2 live sessions a week. **The other five days, an 8-year-old has no reason to open Varsity Tutors, and the parent has no evidence the membership is working.**
 
@@ -19,21 +19,24 @@ Nerdy's own thesis for Live + AI is *"AI supports students between sessions; hum
 | Nerdy need | Numi mechanic |
 |---|---|
 | Daily engagement between sessions | Pet hunger + daily quest — the pet gets hungry overnight; 3 problems feed it |
-| "Reward mastery," not just answers | **Math Powers** skill map — mastery = clean solves on a *strategy*; the pet evolves when powers are mastered |
+| "Reward mastery," not just answers | **Math Powers** — mastery = clean solves on a *strategy*; the pet evolves when powers are mastered |
 | Session intelligence for the tutor | **Tutor Brief** — a 30-second pre-session read generated from play telemetry, with Common Core codes and the recurring misconception |
 | Parent can *see* value (retention) | **Parent Note** — warm, specific coaching note + one 5-minute thing to do tonight |
-| Funnel into live tutoring | "Book a live session on {weakest power} →" CTA in the parent view |
-| Study Plan data | Every attempt logged as a typed `Session` row — `skillId`, `ccss`, `misconception`, `scaffoldUsed`, `timeSec` |
+| Funnel into live tutoring | "Book a live session on {weakest power} →" in the parent view |
+| Study Plan data | Every attempt logged as a typed `Session` row — `skillId`, `ccss`, `misconception`, `scaffoldUsed`, `timeSec` — on-device in this build |
 
 ---
 
-## What's in the demo (90 seconds)
+## How I built this
 
-1. Come back the next morning (`?demo=hungry`) — Sparky is hungry, asks for 3 problems.
-2. Solve two **Make-10** problems → power mastered → **pet evolves** to a Sprite.
-3. Get a division problem wrong on purpose → the classifier tags `multiplied_instead_of_divided` → the **scaffold ladder** builds two easier prerequisite problems that teach *fair share* → nail the original.
-4. Open **⚡ Math Powers** — the skill map with Common Core codes.
-5. Open the parent view → **Parent Note** tab, then **Tutor Brief** tab → "Book a live session on Fair Share →".
+This is an AI-hackathon entry and I built it with an AI pair (Claude Code) doing most of the typing; the commit history shows both names. What I owned:
+
+- **The product thesis** — that the prize is Nerdy's retention gap, not "a math game," and that the Tutor Brief closing the loop back to a human is the differentiator.
+- **The pedagogy** — the requirement that every problem be rendered through a real technique (Mental Abacus, Vedic shortcuts, Lattice), that hints sit *under* the question rather than inside it, and that a scaffold rung must teach a transferable strategy on a smaller number instead of re-asking the same question.
+- **The engagement loop** — feed the pet after the second correct answer, evolution on mastery rather than XP, tactile feedback on every tap.
+- **The engineering priorities** — after an adversarial review of my own repo I chose to spend the remaining days on guardrails, evals, and hardening rather than features, and to state honestly what the evals do and don't measure (see below).
+
+What the AI pair did: scaffolding, most implementation, and the first drafts of the docs — reviewed and redirected by me at each step. If you want to know what I'd do differently, read *Known gaps* at the bottom; that list came from a review I asked for.
 
 ---
 
@@ -48,167 +51,145 @@ Most math apps drill. Numi teaches **the strategy behind the number** — 10 "Ma
 | **Lattice** | Lattice Master | 2×2 box grid with each cell labeled by its factors |
 | **Number Sense** | Fair Share, Break-Apart, Two-Step | Word problems whose scaffolds teach a named, transferable move |
 
-Every problem is tagged to Common Core (e.g. `3.OA.A.2`, `4.NBT.B.5`) so the Tutor Brief speaks the tutor's language.
-
-**Mastery**, not accuracy: a power is mastered after `MASTERY_THRESHOLD` *clean solves* (correct, first try, no scaffold). The demo uses 2 so a video can show it; production would use 3–5 with spaced review.
+Every problem is tagged to Common Core (e.g. `3.OA.A.2`, `4.NBT.B.5`). **Mastery** = `MASTERY_THRESHOLD` clean solves (correct, first try, no scaffold). The demo uses 2 so a video can show it; production would use 3–5 with spaced review.
 
 ---
 
-## The AI (three calls, one pattern)
+## The AI: three calls, one pattern, one guardrail contract
 
-**Code does the math; the LLM does the language.** Answers are never LLM-generated; misconceptions are classified deterministically; stats are pre-aggregated. The model only writes prose over verified numbers.
+**Code does the math; the LLM does the language.** Answers are never LLM-generated; misconceptions are classified deterministically; stats are pre-aggregated. The model only writes prose over numbers the code already knows — and every kid-facing output is checked in code before display.
 
-### 0. Guardrail: nothing unverified reaches a child (`lib/verify.ts`, `/api/scaffold`)
+All model calls go through `lib/llm.ts` (one client, `maxRetries: 0`, a per-call timeout that actually aborts) using prompts from `lib/prompts.ts`. **The evals import the same prompts and the same client**, so an eval run measures what production runs.
 
-Every LLM-generated scaffold is re-derived in code before it is displayed. `verifyScaffold` extracts arithmetic expressions from each rung's question text, evaluates them, and rejects the ladder if any rung's stated answer disagrees. Rejected ladders fall back to the hand-verified `SCAFFOLDS[problemId]`. Rejections are logged with the reason. This is the invariant that lets us put a language model in front of a nine-year-old.
+### Structured output everywhere
+Every route that needs JSON uses Anthropic **tool-use with a forced tool** and validates the tool input with zod. There is no free-text JSON parsing anywhere in `app/api`.
 
-- **Runtime:** every `/api/scaffold` response passes through the verifier.
-- **Offline suite:** `npm run test:verify` (21 checks) and `npm run eval` (scores JSON validity, rung correctness, answer leakage, reading level, and misconception addressing across all fallbacks and — with `ANTHROPIC_API_KEY` set — 20 live cases). Results committed at [`evals/results.json`](evals/results.json); see [`evals/README.md`](evals/README.md) for the contract.
+### `/api/generate` — deterministic numbers, LLM story
+`lib/generate.ts` has 10 seedable generators, one per power. Claude wraps the operands in a 1–2 sentence story around the child's chosen interests. `verifyGeneratedPrompt` then requires every operand to appear as exact digits **in order**, the answer to be absent from prompt and hint, and grade-3 reading level. A rejected story falls back to a code-built story template (`storyTemplate`) that uses the same interests — so AI mode never shows a bare equation, with or without a key.
 
-Latest offline run: **16/16 JSON valid · 16/16 arithmetic clean · 0 failed rungs · 16/16 no bridge leak · 16/16 reading level ok**.
+### `/api/scaffold` — misconception-aware ladder
+On a wrong answer the classifier in `lib/misconceptions.ts` runs first (`multiplied_instead_of_divided`, `added_instead_of_multiplied`, `skipped_a_step`, `forgot_to_carry`, `off_by_one`, `place_value_slip`, `digit_reversal`, `help_requested`). The tag goes to Claude, which must name that error and target it with the first rung. Then `verifyScaffold`:
 
-### 0.5. Deterministic problem generation with LLM story wrapping (`lib/generate.ts`, `/api/generate`)
+- **Rejects at runtime** if any rung's stated answer disagrees with the arithmetic in its question, or the shape is malformed. The expression immediately before the rung's `?` is authoritative; a parenthetical hint elsewhere cannot "verify" a wrong claim (regression-tested).
+- **Reports, but does not reject:** answer leakage in `bridge_back`, reading level, and — important — rungs with no extractable arithmetic ("how many bottom beads for 3?") are `unverified` and allowed through.
 
-**Code picks the numbers. The LLM writes the story. Everything gets verified before display.**
+For hand-authored problems the server resolves the correct answer from `lib/problems.ts` and ignores the client's claim. Rejected ladders fall back to hand-written scaffolds, with the classified misconception's diagnosis line, or to a strategy-matched sample scaffold for AI-generated problems.
 
-- `lib/generate.ts` — 10 seedable generators, one per Math Power. Each returns a `GeneratedSpec` with operands, operation, ground-truth answer, CCSS tags, and a safe template prompt.
-- `/api/generate` — Claude Haiku 4.5 via **tool-use** (Anthropic structured outputs) wraps the spec in a 1–2 sentence story around the child's interests. No `text.indexOf("{")` parsing.
-- `verifyGeneratedPrompt(prompt, operands, answer, hint)` — every operand must appear as its exact digits **in the order given**, the answer must not leak as a bare number in the prompt *or* the hint, and reading level must clear the grade-3 heuristic. A rejected story falls back to `spec.templatePrompt` (which is generated by code, so it always passes).
-- UI: 🤖 AI chip in the HUD flips between the hand-crafted 15 (safe for the video) and live LLM generation. `?ai=1` starts in AI mode; a small footer under each question shows whether the LLM story survived verification or the template was used.
-
-Latest **`npm run eval:generate`** (offline, 200 specs across 10 skills × 20 seeds):
-
-- **Arithmetic consistent: 200/200 (100%)**
-- **Template passes verifier: 200/200 (100%)**
-- Per-skill: 10/10 skills at 20/20
-
-Set `ANTHROPIC_API_KEY` and re-run to score the live tool-use path (90 stories across skills × seeds × interest sets, with latency p50/p95). Results write to `evals/generate.results.json`.
-
-### 1. Misconception classifier → scaffold ladder (`lib/misconceptions.ts`, `/api/scaffold`)
-On a wrong answer, code classifies the error first:
-
-| Tag | Detected when |
-|---|---|
-| `multiplied_instead_of_divided` | answer = a × b on a division word problem |
-| `added_instead_of_multiplied` | answer = a + b on a multiplication problem |
-| `skipped_a_step` | answer = the intermediate result of a two-step problem, or tens×tens only on a lattice |
-| `forgot_to_carry` | ×11 answer with the middle sum ≥ 10 left uncarried |
-| `off_by_one`, `place_value_slip`, `digit_reversal` | arithmetic distance / digit pattern |
-
-The tag is passed to Claude Haiku 4.5, which must name that error in kid language and target it with the first rung. Returns strict JSON:
-
-```json
-{
-  "diagnosis": "You multiplied — but 'sharing into groups' means DIVIDE.",
-  "encouragement": "Let's build up to it with a smaller number.",
-  "scaffold": [
-    { "question": "Warm up: how many groups of 6 fit in 12?", "answer": 2, "technique_note": "Division = 'how many groups fit'." },
-    { "question": "Now double it: how many groups of 6 fit in 24?", "answer": 4, "technique_note": "Twice the total → twice the groups." }
-  ],
-  "bridge_back": "So 24 ÷ 6 = 4. Sparky needs 4 asteroids!"
-}
-```
-
-The live call races a 2.5 s timeout against a hand-written fallback per problem (`lib/scaffolds.ts`); the fallback's diagnosis is swapped for the classified misconception's line. **The demo cannot fail on an API call.**
-
-### 2. Parent Note (`/api/parent-summary`)
-`aggregate(sessions)` → strongest/weakest power, first-try rate, top misconception, days active → Claude writes two paragraphs + one concrete 5-minute activity. No standards codes, no jargon.
-
-### 3. Tutor Brief (`/api/tutor-brief`)
-Same aggregate → strict JSON `{ headline, focus, pattern, suggested_opener, wins, standards[] }` written for a tutor with 30 seconds before a live session. This is the *session intelligence* half of Live + AI, generated from play instead of from a transcript.
-
-Both prefer the **real** `Session[]` from this device and fall back to seed data below 3 attempts.
+### `/api/parent-summary` and `/api/tutor-brief`
+`lib/telemetry.ts` `aggregate()` is the only thing the model sees. Parent Note is prose; Tutor Brief is a forced tool with `{ headline, focus, pattern, suggested_opener, wins, standards[] }`. Both prefer real on-device sessions and use seed data under 3 attempts.
 
 ---
 
-## Retention mechanics
+## What the evals actually measure (read this before the numbers)
 
-- **Hunger** — `lastFedAt` timestamp; the pet is starving 8 h after the last correct answer. Each correct answer feeds a third. Loss aversion + a daily reason to return.
-- **Evolution** — Hatchling → Sprite (1 power) → Wizard (3) → Sage (5). Driven by mastery, not XP, so progression *is* learning.
-- **Star Coins** — +5 per correct, +5 extra for a scaffold-completed solve (persistence pays), +25 per mastery. Spend on hats, food, backgrounds.
-- **Reward nudge** — every 3rd correct answer or evolution prompts "feed a cupcake / open the shop," then resumes.
-- **Streak** — visible 🔥 counter; resets on a wrong answer.
+`npm run test:verify` — **69 unit checks**, offline: the arithmetic extractor and evaluator, the rung checker (including the false-positive regression), the story verifier (operand order, duplicate operands, leakage in prompt and hint), every generator's shape and determinism, every story template against the verifier (10 skills × 5 seeds × 5 interest sets), and the adaptive selector.
+
+`npm run eval:generate` — offline: 200 deterministic specs (10 skills × 20 seeds) must be arithmetic-consistent and their code-built templates must pass the verifier. **Latest: 200/200 and 200/200.** This proves the generators and the verifier agree with each other. It does not exercise the model.
+
+`npm run eval:scaffold` — offline: the 16 hand-written fallback scaffolds. **Latest: 16/16 arithmetic clean, 0 failed rungs, 16/16 no bridge leak, 16/16 reading level, 16/16 classifier tags correct, and 23/32 rungs code-verified** — the other 9 are word-only rungs the verifier cannot re-derive and therefore passes as `unverified`. That is the honest limit of the guardrail today.
+
+**The live passes have not been run.** Both `evals/*.results.json` files carry `"live": null`. With `ANTHROPIC_API_KEY` set, `npm run eval` also generates 20 scaffolds across 8 misconception tags and 90 stories across skills × seeds × interest sets through the production prompts, scores them with the same verifiers, and records latency p50/p95. I did not have a key available at submission time, so **no claim in this README is evidence that the model's output passes the verifier at any particular rate.** The claim is narrower: whatever the model produces is checked, and what fails is replaced.
+
+---
+
+## Security and spend controls (`lib/guard.ts`)
+
+Four public routes call a paid model. Each one:
+
+- caps the body at 32 KB before parsing and validates it with **zod** — enums for everything that reaches a prompt (`skillId`, `interests`, `misconception`, `technique`), length caps on free text (`petName` ≤ 24, question ≤ 300), bounded arrays;
+- puts instructions in the **system** turn and passes request data inside a delimited `<data>` block the system prompt tells the model to treat as untrusted;
+- applies a **per-IP token bucket** (30/min) and a **daily call budget** (`LLM_DAILY_CALL_CAP`, default 1000) that hard-stops LLM calls in code, independent of the console limit;
+- logs one structured `llm_call` line per request with input/output tokens, latency, source, and the budget snapshot;
+- is **POST-only** (the old `GET /api/parent-summary` billed a model call to every crawler).
+
+**Known limitation, stated plainly:** the rate limiter and budget counters are in-process `Map`s. On serverless, each warm instance has its own, so a distributed caller can exceed the nominal limits. This stops the one-laptop loop and makes spend observable; production swaps the `Map` for Vercel KV / Upstash behind the same interface.
 
 ---
 
 ## Stack
 
-Next.js 14 (App Router) · Tailwind · Framer Motion · Anthropic Claude Haiku 4.5 · React state + `localStorage` (no database in this build).
+Next.js 14.2.35 (App Router) · Tailwind · Framer Motion · `@anthropic-ai/sdk` 0.124 · zod · React state + `localStorage` (no database in this build) · `next/font` for Fredoka (self-hosted).
 
 ```bash
 npm install
 cp .env.local.example .env.local   # optional: ANTHROPIC_API_KEY
 npm run dev                        # http://localhost:3000
+npm run lint && npm run test:verify && npm run eval
 ```
 
-Demo helpers: `?demo=hungry` (simulate overnight), `?demo=reset` (wipe local state).
+CI (`.github/workflows/ci.yml`) runs lint, unit checks, the offline generation eval, and the build on every push and PR.
 
 ```
 app/
-  page.tsx                 game loop, state, hunger/evolution/reward logic
-  api/scaffold             misconception-aware scaffold ladder
-  api/parent-summary       parent note over aggregated telemetry
-  api/tutor-brief          tutor pre-session brief
-components/
-  Pet.tsx                  evolving SVG pet (4 stages, 7 moods)
-  AbacusInput / VedicInput / LatticeInput
-  ScaffoldLadder, SkillMap, ParentModal, PetShop, RewardNudge, HUD
+  page.tsx                 game loop + phase machine (answering | celebrating | scaffolding | loading)
+  api/generate             numbers in code → story via forced tool → verified → template fallback
+  api/scaffold             classifier → forced tool → verifier → hand-written fallback
+  api/parent-summary       prose note over aggregated telemetry (POST only)
+  api/tutor-brief          forced-tool brief over the same aggregate
 lib/
-  skills.ts                Math Powers, mastery, evolution stages
-  misconceptions.ts        deterministic error classifier
-  telemetry.ts             aggregate() — the only thing the LLM sees
-  problems.ts / scaffolds.ts / shop.ts / mockSessions.ts
+  prompts.ts               every prompt + tool schema (routes AND evals import from here)
+  llm.ts                   one client, one call helper, typed error → reason codes
+  guard.ts                 zod schemas, body cap, rate limit, daily budget, usage log
+  verify.ts                rung checker, story verifier, reading heuristic
+  generate.ts              10 seeded generators + storyTemplate()
+  misconceptions.ts        deterministic classifier
+  nextProblem.ts           adaptive selector (spaced review every 4th, weakest unmastered otherwise)
+  skills.ts / telemetry.ts / problems.ts / scaffolds.ts / shop.ts / sound.ts
+evals/
+  verify.test.ts           69 offline checks
+  scaffold.eval.ts         fallbacks offline + 20 live cases when a key is set
+  generate.eval.ts         200 specs offline + 90 live stories when a key is set
 ```
 
 ---
 
 ## How this plugs into Nerdy
 
-**Study Plan.** Each `Session` row is already shaped for it: `{ ts, skillId, ccss[], correct, firstTry, scaffoldUsed, misconception, timeSec }`. Study Plan tracks lessons, practice, and live sessions; Numi *is* the practice feed for K-5, with standards attached.
+**Study Plan.** Each `Session` row is already shaped for it. Study Plan tracks lessons, practice, and live sessions; Numi is the K-5 practice feed with standards attached — once the rows leave the device (see gaps).
 
-**Live + AI.** The Tutor Brief is session intelligence generated *before* the session, from play. After the session, the tutor's notes could set the next day's `DEMO_ORDER` — the human closes the loop the AI opened.
+**Live + AI.** The Tutor Brief is session intelligence generated *before* the session, from play. After the session, the tutor's notes could drive the next day's selector — the human closes the loop the AI opened.
 
-**Self-serve funnel.** Numi is a free, no-login top of funnel. The parent sees a gap named in plain English and a one-tap "book a session on Fair Share" — a warm lead with a diagnosis attached, replacing a telesales call.
-
-**Retention.** The parent note is a weekly email waiting to happen: *"Here's what Sparky taught Maya this week."* Value the parent can see is cheaper than a cancel-by-phone policy.
+**Self-serve funnel.** Numi is a free, no-login top of funnel. The parent sees a gap named in plain English and a one-tap "book a session on Fair Share" — a warm lead with a diagnosis attached.
 
 ---
 
-## Adaptive engine (`lib/nextProblem.ts`)
+## Known gaps
 
-```
-Every 4th problem:              spaced-review a mastered power (rotated)
-Otherwise:                      pick the least-solved unmastered power that
-                                isn't the last or second-last skill served
-Difficulty for that skill:      skill.order + min(cleanSolves, mastery_threshold)
-Fallback (all mastered):        cycle through skills for continued practice
-```
+From an adversarial review I ran against this repo before submitting. Fixed items are marked; the rest are the honest to-do list.
 
-Live in the app — toggle **🎯 Adaptive** in the HUD (or `?adaptive=1`). Off by default so the video's scripted sequence still plays for a recording; on when a judge clicks around. A small "Adaptive: {reason}" footer shows the selector's stated reasoning under each question.
-
-**Composable with AI mode:** turn on both toggles and the selector picks the skill+difficulty while `/api/generate` writes the story for those numbers — real adaptive problems generated live and verified before display.
-
-### "I'm stuck" button
-
-Every question has a **🤔 I'm stuck — help me build up** button. Tapping it runs the same scaffold ladder as a wrong answer, tagged `help_requested`, with a warmer diagnosis. Help-seeking is tracked separately so it shows up in the Parent Note as persistence, not a defect.
+| Gap | Status |
+|---|---|
+| Public LLM routes had no validation, rate limit, budget, or usage logging | ✅ fixed (`lib/guard.ts`) |
+| Client strings interpolated into prompts; safety text in the user turn | ✅ fixed (system prompts, `<data>` blocks, enums) |
+| Two kid-facing routes parsed free-text JSON | ✅ fixed (forced tool-use everywhere) |
+| Eval prompts were a copy of production, not an import | ✅ fixed (`lib/prompts.ts`) |
+| Verifier accepted any sub-expression equal to the claimed answer | ✅ fixed (expression before `?` is authoritative; regression test) |
+| Inputs stayed live during the celebration → double-tap double-credited | ✅ fixed (phase machine + native `<fieldset disabled>`) |
+| AI-mode fetch double-fired, no cancellation, no `.catch` | ✅ fixed (sequence id + `AbortController`) |
+| HUD overflowed at 375 px; dev toggles on the kid surface | ✅ fixed (two rows, 44 px targets, `?debug=1`) |
+| Display font never loaded (`@import` after `@tailwind`) | ✅ fixed (`next/font`) |
+| `next` 14.2.15 shipped a critical advisory; lint had no config; no CI; no LICENSE | ✅ fixed |
+| Answers are graded in the browser; mastery/coins live in `localStorage` | ⬜ needs a server-side problem cache and grading endpoint |
+| AI-generated problems' answers are trusted from the client (no server record) | ⬜ same fix as above |
+| 9 of 32 fallback rungs are word-only and pass as `unverified` | ⬜ either verify semantically or reject at runtime |
+| Live eval passes never run; `results.json` has `live: null` | ⬜ needs a key; ~110 Haiku calls |
+| `app/page.tsx` is ~550 lines with the economy logic inline and untested | ⬜ pure `gameReducer` + hooks + reducer tests |
+| Modals lack dialog semantics / focus trap; no `prefers-reduced-motion` for Framer | ⬜ one `<Modal>` on `<dialog>`; `MotionConfig` |
+| Reading-level check is a word/sentence-length heuristic, not Flesch-Kincaid | ⬜ |
+| Persisted state has no version/migration | ⬜ |
+| Sessions can't be joined to anything (no learner/device id) | ⬜ |
 
 ## Built vs. planned
 
 | Feature | Demo | Production |
 |---|---|---|
-| 10 Math Powers across 3 Eastern techniques | ✅ | + spaced review |
+| 10 Math Powers across 3 Eastern techniques | ✅ | + spaced review tuning |
 | Mastery tracking + pet evolution | ✅ | server-side |
-| Misconception classifier → targeted scaffold | ✅ live + fallback | wider taxonomy, learned from tutor labels |
-| Scaffold verifier + `npm run eval` | ✅ 21/21 unit tests, 0 failed rungs across 16 fallbacks | tool-use JSON schema, live-eval CI gate |
-| Deterministic generation + LLM story via tool-use | ✅ 10 generators, 200/200 offline, live rejects fall back to safe template | wider misconception taxonomy, spaced review |
-| Adaptive selector (weakest-power, spaced review) | ✅ `lib/nextProblem.ts` with 5 unit tests, HUD toggle | server-side, per-account |
-| "I'm stuck" button (help-seeking as a first-class signal) | ✅ tagged `help_requested`, tracked in telemetry | teacher-facing help-rate reporting |
-| Hunger / daily quest / streak | ✅ | push notification at hunger 60% |
-| Star Coins + Pet Shop | ✅ | inventory service |
-| Parent Note | ✅ real LLM over real device telemetry | weekly email |
-| Tutor Brief | ✅ real LLM over real device telemetry | injected into the Live Learning Platform pre-session |
-| Book-a-session CTA | ✅ link | deep-link with diagnosis payload |
-| Adaptive difficulty | 📋 above | |
-| LLM-generated problems (code picks numbers) | 📋 | |
+| Misconception classifier → targeted scaffold, verified in code | ✅ live + fallback | semantic verification of word-only rungs |
+| Deterministic generation + LLM story via forced tool-use, verified | ✅ | server-side problem cache |
+| Adaptive selector | ✅ | per-account, tutor-steerable |
+| Hunger / daily quest / streak / Star Coins / shop | ✅ | push at hunger 60% |
+| Parent Note + Tutor Brief | ✅ real LLM over real device telemetry | weekly email; injected into the Live Learning Platform pre-session |
+| Guardrails: zod, rate limit, budget, usage logs | ✅ in-process | KV-backed |
+| Evals | ✅ offline; live pass wired, not run | CI gate on live pass rate |
 | Auth / multi-device / Study Plan sync | ❌ | Supabase → Nerdy |
-| Content safety pipeline | 📋 | age-filter system prompt + output moderation |

@@ -9,17 +9,21 @@ import { NumberPad } from "./NumberPad";
 
 export function QuestionCard({
   problem,
+  disabled = false,
   onResult,
   onAskHelp,
 }: {
   problem: Problem;
+  /** Disables every input in the card (native <fieldset disabled>) — used by
+   *  the page's phase machine so taps during a celebration or scaffold are inert. */
+  disabled?: boolean;
   onResult: (correct: boolean, userAnswer: number) => void;
   onAskHelp: () => void;
 }) {
   const [val, setVal] = useState("");
 
   return (
-    <div className="card space-y-3">
+    <fieldset disabled={disabled} aria-busy={disabled} className="card space-y-3 disabled:opacity-90">
       <div className="text-xs font-bold text-gray-400 tracking-wide flex justify-between items-center">
         <span className="text-sky-700 bg-sky-50 border border-sky-100 rounded-full px-2 py-0.5">
           ⚡ {getSkill(problem.skillId).emoji} {getSkill(problem.skillId).name}
@@ -81,8 +85,8 @@ export function QuestionCard({
         onClick={onAskHelp}
         className="w-full text-center text-sm text-sky-700 font-semibold py-2 rounded-xl bg-sky-50 border border-sky-100"
       >
-        🤔 I'm stuck — help me build up
+        🤔 I&apos;m stuck — help me build up
       </button>
-    </div>
+    </fieldset>
   );
 }
