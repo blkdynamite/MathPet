@@ -86,7 +86,7 @@ For hand-authored problems the server resolves the correct answer from `lib/prob
 
 `npm run eval:generate` — offline: 200 deterministic specs (10 skills × 20 seeds) must be arithmetic-consistent and their code-built templates must pass the verifier. **Latest: 200/200 and 200/200.** This proves the generators and the verifier agree with each other. It does not exercise the model.
 
-`npm run eval:scaffold` — offline: the 16 hand-written fallback scaffolds. **Latest: 16/16 arithmetic clean, 0 failed rungs, 16/16 no bridge leak, 16/16 reading level, 16/16 classifier tags correct, and 23/32 rungs code-verified** — the other 9 are word-only rungs the verifier cannot re-derive and therefore passes as `unverified`. That is the honest limit of the guardrail today.
+`npm run eval:scaffold` — offline: the 16 hand-written fallback scaffolds. **Latest: 16/16 arithmetic clean, 0 failed rungs, 16/16 no bridge leak, 16/16 reading level, 16/16 classifier tags correct, and 32/32 rungs code-verified** — the other 9 are word-only rungs the verifier cannot re-derive and therefore passes as `unverified`. That is the honest limit of the guardrail today.
 
 **The live passes have not been run.** Both `evals/*.results.json` files carry `"live": null`. With `ANTHROPIC_API_KEY` set, `npm run eval` also generates 20 scaffolds across 8 misconception tags and 90 stories across skills × seeds × interest sets through the production prompts, scores them with the same verifiers, and records latency p50/p95. I did not have a key available at submission time, so **no claim in this README is evidence that the model's output passes the verifier at any particular rate.** The claim is narrower: whatever the model produces is checked, and what fails is replaced.
 
@@ -169,14 +169,16 @@ From an adversarial review I ran against this repo before submitting. Fixed item
 | HUD overflowed at 375 px; dev toggles on the kid surface | ✅ fixed (two rows, 44 px targets, `?debug=1`) |
 | Display font never loaded (`@import` after `@tailwind`) | ✅ fixed (`next/font`) |
 | `next` 14.2.15 shipped a critical advisory; lint had no config; no CI; no LICENSE | ✅ fixed |
+| 9 of 32 fallback rungs were word-only and passed as `unverified` | ✅ fixed (all rungs now contain an extractable arithmetic expression; **32/32 verified**) |
+| Modals lacked dialog semantics / focus trap; no `prefers-reduced-motion` for Framer | ✅ fixed (`components/Modal.tsx` with focus trap, Esc, aria-modal, body-scroll lock, backdrop close; `MotionConfig reducedMotion="user"`) |
+| Persisted state had no version/migration | ✅ fixed (`migrate()` deep-merges any older/partial blob into `fresh()`; invalid data → onboarding, not a white screen) |
+| Scaffold wrong-rung feedback was silent | ✅ fixed (shake, message, wrong-tone, auto-hint after 2 misses, "Skip this step" after 3) |
+| Shop advertised "+5 XP" for a stat that didn't exist; backgrounds cost 100 coins and did nothing | ✅ fixed (copy matches actual effects; backgrounds shown "Coming soon" and unpurchaseable) |
 | Answers are graded in the browser; mastery/coins live in `localStorage` | ⬜ needs a server-side problem cache and grading endpoint |
 | AI-generated problems' answers are trusted from the client (no server record) | ⬜ same fix as above |
-| 9 of 32 fallback rungs are word-only and pass as `unverified` | ⬜ either verify semantically or reject at runtime |
 | Live eval passes never run; `results.json` has `live: null` | ⬜ needs a key; ~110 Haiku calls |
 | `app/page.tsx` is ~550 lines with the economy logic inline and untested | ⬜ pure `gameReducer` + hooks + reducer tests |
-| Modals lack dialog semantics / focus trap; no `prefers-reduced-motion` for Framer | ⬜ one `<Modal>` on `<dialog>`; `MotionConfig` |
 | Reading-level check is a word/sentence-length heuristic, not Flesch-Kincaid | ⬜ |
-| Persisted state has no version/migration | ⬜ |
 | Sessions can't be joined to anything (no learner/device id) | ⬜ |
 
 ## Built vs. planned
