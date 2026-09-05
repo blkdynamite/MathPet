@@ -22,7 +22,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['"Fredoka"', "system-ui", "sans-serif"],
+        display: ["var(--font-display)", '"Fredoka"', "system-ui", "sans-serif"],
       },
       keyframes: {
         bob: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },

@@ -45,7 +45,7 @@ export function Onboarding({
       <div className="text-6xl mb-4">🥚</div>
       <h1 className="text-3xl font-bold mb-1">Meet your pet!</h1>
       <p className="text-gray-600 text-center mb-6">
-        Pick a name and up to 3 things you like — Sparky's math problems will use them.
+        Pick a name and up to 3 things you like — Sparky&apos;s math problems will use them.
       </p>
 
       <input

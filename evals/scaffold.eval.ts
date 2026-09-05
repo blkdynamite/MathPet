@@ -12,7 +12,11 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import Anthropic from "@anthropic-ai/sdk";
+// The live pass calls the SAME system prompt, tool schema, and client helper
+// production uses (lib/prompts.ts, lib/llm.ts). A prompt change in the route
+// is measured here automatically — there is no second copy to drift.
+import { callTool } from "../lib/llm";
+import { SCAFFOLD_SYSTEM, SCAFFOLD_TOOL, buildScaffoldUser } from "../lib/prompts";
 import { SCAFFOLDS } from "../lib/scaffolds";
 import { PROBLEMS, getProblemById } from "../lib/problems";
 import { classify, Misconception } from "../lib/misconceptions";
@@ -94,7 +98,6 @@ function scoreScaffold(
 
 // ---------------------------------------------------------------------------
 async function fetchLive(
-  client: Anthropic,
   problemId: string,
   original: string,
   correctAnswer: number,
@@ -102,60 +105,19 @@ async function fetchLive(
   concept: string,
   technique: string,
   misconception: Misconception
-): Promise<{ scaffold: Scaffold | null; latencyMs: number; jsonOk: boolean }> {
-  const SYSTEM = `You are Sparky, a warm math tutor for a 4th grader.
-Return STRICT JSON only. Every rung must contain an arithmetic expression
-that evaluates to its "answer". Sentences ≤ 20 words, no word > 12 chars.
-Do NOT restate the original answer as a bare number in bridge_back.
-
-{
-  "diagnosis": "one sentence naming the likely misconception",
-  "encouragement": "one warm sentence",
-  "scaffold": [
-    { "question": "...", "answer": <number>, "technique_note": "..." },
-    { "question": "...", "answer": <number>, "technique_note": "..." }
-  ],
-  "bridge_back": "one sentence pointing back — never re-stating the answer"
-}`;
-  const t0 = Date.now();
-  try {
-    const msg = await client.messages.create({
-      model: "claude-haiku-4-5",
-      max_tokens: 700,
-      system: SYSTEM,
-      messages: [
-        {
-          role: "user",
-          content: JSON.stringify({
-            originalQuestion: original,
-            correctAnswer,
-            userAnswer,
-            concept,
-            preferredTechnique: technique,
-            detectedMisconception: misconception,
-            instruction:
-              "If detectedMisconception is not 'unknown', your diagnosis MUST name that specific error and the first rung MUST target it.",
-          }),
-        },
-      ],
-    });
-    const latencyMs = Date.now() - t0;
-    const text = msg.content
-      .filter((b: any) => b.type === "text")
-      .map((b: any) => b.text)
-      .join("");
-    const s = text.indexOf("{");
-    const e = text.lastIndexOf("}");
-    if (s === -1) return { scaffold: null, latencyMs, jsonOk: false };
-    try {
-      const parsed = JSON.parse(text.slice(s, e + 1)) as Scaffold;
-      return { scaffold: parsed, latencyMs, jsonOk: true };
-    } catch {
-      return { scaffold: null, latencyMs, jsonOk: false };
-    }
-  } catch (err) {
-    return { scaffold: null, latencyMs: Date.now() - t0, jsonOk: false };
-  }
+): Promise<{ scaffold: Scaffold | null; latencyMs: number; jsonOk: boolean; reason?: string }> {
+  void problemId;
+  const r = await callTool<Scaffold>({
+    system: SCAFFOLD_SYSTEM,
+    user: buildScaffoldUser({ originalQuestion: original, correctAnswer, userAnswer, concept, technique, misconception }),
+    tool: SCAFFOLD_TOOL,
+    maxTokens: 700,
+    timeoutMs: 8000, // generous in the eval: we're measuring quality, not the route's latency budget
+  });
+  if (!r.ok) return { scaffold: null, latencyMs: r.latencyMs, jsonOk: false, reason: r.reason };
+  const v = r.value;
+  const wellFormed = v && Array.isArray(v.scaffold) && typeof v.diagnosis === "string" && typeof v.bridge_back === "string";
+  return { scaffold: wellFormed ? v : null, latencyMs: r.latencyMs, jsonOk: !!wellFormed };
 }
 
 // ---------------------------------------------------------------------------
@@ -248,7 +210,6 @@ async function main() {
   let latencyStats: { p50: number; p95: number; avg: number; count: number } | null = null;
 
   if (process.env.ANTHROPIC_API_KEY) {
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     console.log(`\nGenerating ${CASES.length} live scaffolds…`);
     const latencies: number[] = [];
     for (const c of CASES) {
@@ -256,7 +217,6 @@ async function main() {
       if (!prob) continue;
       const detected = classify(prob, c.wrongAnswer);
       const res = await fetchLive(
-        client,
         c.problemId,
         prob.prompt,
         prob.answer,
@@ -278,7 +238,7 @@ async function main() {
             readingOk: false,
             addressesMisconception: false,
             classifierOk: detected === c.expectMiscon,
-            reasons: ["JSON parse failed or API error"],
+            reasons: [`no usable model output (${res.reason ?? "malformed tool input"})`],
           };
       liveRows.push({
         case: `${c.problemId}/${c.wrongAnswer}`,

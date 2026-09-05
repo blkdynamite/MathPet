@@ -1,53 +1,45 @@
 # Numi evals
 
-**What this proves:** every scaffold a child sees has been re-derived in code before display. The verifier is not a nice-to-have — it's the guardrail that lets us put an LLM in front of an 8-year-old.
+**What this proves — and what it doesn't.** Every LLM-generated scaffold rung and story is checked in code before a child sees it, and what fails is replaced. The offline suites prove the checkers and the hand-written/code-generated content agree. **They do not measure the model.** The live passes do; they are wired to the production prompts but have not been run in this repo (`"live": null` in both results files) because no API key was available at submission time.
 
 ## Run
 
 ```bash
-npm run test:verify     # unit tests for lib/verify.ts and lib/generate.ts (59 checks, offline)
-npm run eval:scaffold   # scores all fallback scaffolds; live pass if ANTHROPIC_API_KEY is set
-npm run eval:generate   # scores 200 deterministic specs offline; 90 live tool-use stories if key
-npm run eval            # runs both eval:scaffold and eval:generate
+npm run test:verify     # 69 offline unit checks (lib/verify.ts, lib/generate.ts, lib/nextProblem.ts)
+npm run eval:scaffold   # 16 fallback scaffolds offline; + 20 live cases if ANTHROPIC_API_KEY is set
+npm run eval:generate   # 200 deterministic specs offline; + 90 live stories if a key is set
+npm run eval            # both
 ```
 
-Latest run is committed at `evals/results.json`.
+Latest committed run: `evals/results.json`, `evals/generate.results.json`.
+
+## Eval == production
+
+`evals/*.eval.ts` import `SCAFFOLD_SYSTEM`, `SCAFFOLD_TOOL`, `STORY_SYSTEM`, `STORY_TOOL`, and the user-turn builders from `lib/prompts.ts`, and call the model through `lib/llm.ts` — the same objects `app/api/*` use. A prompt edit in production is what the next eval run measures. (Before this, the eval had its own copy of the prompt and could never have measured the route.)
 
 ## What we score
 
-Every scaffold produced by the pipeline (fallback or live LLM) gets each of these:
+| Metric | How | Runtime effect |
+|---|---|---|
+| **JSON valid** | Forced tool returned a well-formed object | reject → fallback |
+| **Arithmetic clean** | 0 rungs whose stated answer disagrees with the arithmetic in its question. The expression immediately before the rung's `?` is authoritative; other expressions in the text cannot verify a claim | reject → fallback |
+| **Rungs verified** | Fraction of rungs where arithmetic was extractable *and* matched. Word-only rungs are `unverified` — **allowed through** | metric only |
+| **No bridge leak** | `bridge_back` doesn't restate the original answer as a bare number | metric only |
+| **Reading level** | Sentence ≤ 22 words, word ≤ 14 chars (a heuristic, not Flesch-Kincaid) | metric only |
+| **Diagnosis addresses misconception** | Keyword match against the tag's vocabulary (loose) | metric only |
+| **Classifier tag ok** | `classify(problem, wrongAnswer)` returns the expected tag for each curated case | n/a |
 
-| Metric | How |
-|---|---|
-| **JSON valid** | Parses to the `Scaffold` shape |
-| **Arithmetic clean** | 0 rungs whose stated answer disagrees with what code evaluates from the question text |
-| **Rungs verified** | Fraction of rungs where an arithmetic expression was extracted *and* matched. Word-only rungs are `unverified` (allowed through) rather than `failed` |
-| **No bridge leak** | `bridge_back` doesn't restate the original problem's answer as a bare number |
-| **Reading level** | Sentence ≤ 22 words, word ≤ 14 chars (grade-3 heuristic) across every kid-facing string |
-| **Diagnosis addresses misconception** | For a classified misconception, the diagnosis mentions a keyword from that tag |
-| **Classifier tag ok** | For each curated wrong-answer case, `classify(problem, userAnswer)` returns the expected tag |
+Story verification (`verifyGeneratedPrompt`): every operand present as exact digits in order (duplicates handled), answer absent from prompt and hint, reading level. Fails → the code-built `storyTemplate` is served.
 
-## The guardrail contract
+## Latest offline numbers
 
-`verifyScaffold(scaffold, originalAnswer)` returns `ok: false` on any of:
-- a rung's stated answer disagrees with the arithmetic in its question
-- rung list is empty or has more than 4 rungs
-- the scaffold shape is malformed
+- Generation: **200/200** arithmetic-consistent, **200/200** template passes verifier.
+- Scaffold fallbacks: **16/16** arithmetic clean, **0** failed rungs, **16/16** no bridge leak, **16/16** reading level, **16/16** classifier tags; **23/32 rungs code-verified** (9 word-only rungs `unverified`).
 
-`app/api/scaffold/route.ts` calls the verifier on every live LLM response. `ok: false` → the hand-verified fallback is served instead and the rejection is logged. The child never sees an unverified rung claim.
+## Curated live cases
 
-Leakage and reading level are quality metrics — the eval reports them but the runtime does not reject on them, because a rung whose answer legitimately equals the original answer is often correct pedagogy (the ladder builds all the way up to the answer).
+`CASES` in `scaffold.eval.ts`: 20 wrong-answer scenarios across 8 misconception tags. `generate.eval.ts` live pass: 10 skills × 3 seeds × 3 interest sets. Both record per-case rows, aggregate pass rates, rejection reasons, and latency p50/p95.
 
-## Curated cases
+## Custom runner
 
-`CASES` in `scaffold.eval.ts` covers 20 wrong-answer scenarios spanning 8 misconception tags:
-
-- `multiplied_instead_of_divided` (×2)
-- `added_instead_of_multiplied` (×2)
-- `skipped_a_step` (×4 — two-step word, lattice tens-only)
-- `place_value_slip`
-- `off_by_one` (×8 — the classifier's fallback for a small numeric distance)
-- `digit_reversal` (×2 — 253 vs 352)
-- `unknown` (×1 — a wrong answer with no obvious pattern)
-
-The live pass sends each case to Claude Haiku 4.5, parses the JSON, and applies the same verifier the runtime uses. `results.json` contains per-case rows and a summary block with latency percentiles.
+`verify.test.ts` is a ~60-line dependency-free runner (prints `ok`/`FAIL`, exits non-zero). It's adequate for the current size; a thrown exception aborts the run rather than reporting partial results. Switching to vitest is a one-line devDependency when the suite grows.

@@ -40,6 +40,9 @@ type SaveState = {
   muted?: boolean;
 };
 
+type Phase = "answering" | "celebrating" | "scaffolding" | "loading";
+const EMPTY_INTERESTS: string[] = [];
+
 const LS_KEY = "numi_state_v2";
 const CUPCAKE_COST = 20;
 // Feed modal fires after the 2nd correct answer, then every 3rd after that (2, 5, 8…).
@@ -96,7 +99,17 @@ export default function Home() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSource, setAiSource] = useState<"live" | "template" | null>(null);
   const [adaptiveMode, setAdaptiveMode] = useState(false);
-  const [adaptiveReason, setAdaptiveReason] = useState<string | null>(null);
+  const [debug, setDebug] = useState(false);
+  // Answer-phase state machine. Every input is disabled unless "answering",
+  // and the result handler early-returns otherwise — so a double-tap during
+  // the celebration can't double-credit coins/streak or skip a problem.
+  const [phase, setPhase] = useState<Phase>("answering");
+  // Latest state for reads inside memo/effects without widening their deps.
+  const stateRef = useRef<SaveState | null>(null);
+  stateRef.current = state;
+  // Sequence id for the AI-mode fetch so a slow earlier response can never
+  // overwrite a newer problem.
+  const aiSeq = useRef(0);
 
   // per-problem attempt tracking
   const startedAt = useRef<number>(Date.now());
@@ -118,6 +131,7 @@ export default function Home() {
       }
       if (q.get("ai") === "1") setAiMode(true);
       if (q.get("adaptive") === "1") setAdaptiveMode(true);
+      if (q.get("debug") === "1" || q.get("ai") === "1" || q.get("adaptive") === "1") setDebug(true);
     }
     const t = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(t);
@@ -130,44 +144,70 @@ export default function Home() {
   // Which skill+difficulty should the next problem test?
   // - Adaptive mode: run the real selector on progress + session history.
   // - Otherwise:     follow the video's rigged DEMO_ORDER for predictability.
-  const staticProblem = useMemo(() => {
-    if (adaptiveMode && state) {
-      const pick = pickNextSkill(state.progress, state.sessions);
-      setAdaptiveReason(pick.reason);
-      return pickStaticProblem(pick, state.sessions);
+  // `demoIndex` is the single sequence counter for "which problem is on
+  // screen" in both modes. The pick is computed ONLY when it advances — it
+  // reads the latest progress/sessions through a ref so a correct answer
+  // (which appends a session) cannot swap the problem mid-celebration.
+  const picked = useMemo(() => {
+    const s = stateRef.current;
+    if (adaptiveMode && s) {
+      const pick = pickNextSkill(s.progress, s.sessions);
+      return { problem: pickStaticProblem(pick, s.sessions), reason: pick.reason as string | null };
     }
     const id = DEMO_ORDER[demoIndex % DEMO_ORDER.length];
-    return getProblemById(id) ?? PROBLEMS[0];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [demoIndex, adaptiveMode, state?.sessions.length]);
+    return { problem: getProblemById(id) ?? PROBLEMS[0], reason: null as string | null };
+  }, [demoIndex, adaptiveMode]);
+  const staticProblem = picked.problem;
+  const adaptiveReason = picked.reason;
+  const interests = state?.interests ?? EMPTY_INTERESTS;
   const currentProblem = aiMode && aiProblem ? aiProblem : staticProblem;
 
-  // In AI mode, fetch a freshly-generated problem for the same skillId as
-  // the demo sequence would have used. Story from the LLM (via tool-use);
-  // verifier already ran server-side and served the safe template if the
-  // model produced a broken story.
+  // AI mode: fetch a freshly-generated problem for the same skill the sequence
+  // would have used. Cancellable (AbortController) and sequenced (aiSeq) so a
+  // slow earlier response can never land on top of a newer problem; errors
+  // resolve explicitly to a safe problem rather than an unhandled rejection.
   useEffect(() => {
-    if (!aiMode) return;
+    if (!aiMode) {
+      setAiProblem(null);
+      setAiSource(null);
+      return;
+    }
+    const seq = ++aiSeq.current;
+    const ctrl = new AbortController();
     setAiLoading(true);
     setAiProblem(null);
+    setPhase("loading");
     fetch("/api/generate", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         skillId: staticProblem.skillId,
         difficulty: staticProblem.difficulty,
-        interests: state?.interests ?? [],
+        interests,
       }),
+      signal: ctrl.signal,
     })
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
+        if (seq !== aiSeq.current) return;
         if (d?.problem) {
           setAiProblem(d.problem);
-          setAiSource(d.source);
+          setAiSource(d.source === "live" ? "live" : "template");
+        } else {
+          setAiSource("template");
         }
       })
-      .finally(() => setAiLoading(false));
-  }, [aiMode, demoIndex, staticProblem.skillId, staticProblem.difficulty, state?.interests]);
+      .catch(() => {
+        if (seq === aiSeq.current) setAiSource("template");
+      })
+      .finally(() => {
+        if (seq === aiSeq.current) {
+          setAiLoading(false);
+          setPhase("answering");
+        }
+      });
+    return () => ctrl.abort();
+  }, [aiMode, demoIndex, staticProblem, interests]);
 
   // reset per-problem trackers when the problem changes
   useEffect(() => {
@@ -242,12 +282,21 @@ export default function Home() {
     return handleResultInternal(correct, userAnswer);
   }
 
+  // Advance to the next problem and reopen input. The only place demoIndex
+  // moves forward, so it's the only place phase returns to "answering".
+  function advance() {
+    advance();
+    setPhase("answering");
+  }
+
   async function handleResultInternal(
     correct: boolean,
     userAnswer: number,
     overrideMiscon?: Misconception
   ) {
+    if (phase !== "answering") return; // ignore taps during celebration/scaffold/loading
     if (correct) {
+      setPhase("celebrating");
       const session = logSession(true);
       const skillId = currentProblem.skillId;
       const wasMastered = isMastered(state!.progress, skillId);
@@ -317,7 +366,7 @@ export default function Home() {
           say(`🏅 Power mastered: ${skill.emoji} ${skill.name}! +25 coins`, 3500);
           setTimeout(() => {
             setMood("idle");
-            setDemoIndex((i) => i + 1);
+            advance();
           }, 2200);
         } else if (shouldNudgeAt(newStreak)) {
           setMood("idle");
@@ -326,7 +375,7 @@ export default function Home() {
         } else {
           setMood("idle");
           setBubble(null);
-          setDemoIndex((i) => i + 1);
+          advance();
         }
       };
       setTimeout(afterHappy, 1300);
@@ -339,6 +388,7 @@ export default function Home() {
     lastWrongAnswer.current = userAnswer;
     usedScaffold.current = true;
 
+    setPhase("scaffolding");
     setMood("sad");
     if (overrideMiscon !== "help_requested") playWrong(state!.muted);
     setState((s) => (s ? { ...s, streak: 0 } : s));
@@ -375,6 +425,7 @@ export default function Home() {
 
   function completeScaffold() {
     setScaffold(null);
+    setPhase("answering");
     say("Now try the original! 💪");
   }
 
@@ -423,6 +474,7 @@ export default function Home() {
         onToggleAdaptive={() => setAdaptiveMode((v) => !v)}
         muted={!!state.muted}
         onToggleMute={() => setState((s) => (s ? { ...s, muted: !s.muted } : s))}
+        debug={debug}
       />
 
       <div
@@ -455,25 +507,26 @@ export default function Home() {
           <QuestionCard
             key={currentProblem.id}
             problem={currentProblem}
+            disabled={phase !== "answering"}
             onResult={handleResult}
             onAskHelp={handleAskHelp}
           />
-          {adaptiveMode && adaptiveReason && (
-            <div className="text-[10px] text-sky-600 text-center -mt-1">
-              🎯 Adaptive: {adaptiveReason}
-            </div>
+          {debug && adaptiveMode && adaptiveReason && (
+            <div className="text-xs text-sky-600 text-center -mt-1">🎯 Adaptive: {adaptiveReason}</div>
           )}
-          {aiMode && aiSource && (
-            <div className="text-[10px] text-fuchsia-500 text-center -mt-1">
-              🤖 {aiSource === "live" ? "Story generated live and verified" : "LLM story rejected — showing safe template"}
+          {debug && aiMode && aiSource && (
+            <div className="text-xs text-fuchsia-500 text-center -mt-1">
+              🤖 {aiSource === "live" ? "Story generated live and verified" : "Showing a safe problem (AI story unavailable or rejected)"}
             </div>
           )}
         </>
       )}
 
-      <div className="text-[10px] text-gray-400 text-center pt-2">
-        Numi · the between-sessions layer · {state.sessions.length} attempts logged on this device
-      </div>
+      {debug && (
+        <div className="text-xs text-gray-500 text-center pt-2">
+          {state.sessions.length} attempts logged on this device · phase: {phase}
+        </div>
+      )}
 
       {showShop && (
         <PetShop
@@ -486,7 +539,7 @@ export default function Home() {
             setShowShop(false);
             if (nudge) {
               setNudge(null);
-              setDemoIndex((i) => i + 1);
+              advance();
             }
           }}
         />
@@ -504,12 +557,12 @@ export default function Home() {
           hunger={hunger}
           onFeed={(id) => {
             feedItem(id);
-            setDemoIndex((i) => i + 1);
+            advance();
           }}
           onShop={() => setShowShop(true)}
           onDismiss={() => {
             setNudge(null);
-            setDemoIndex((i) => i + 1);
+            advance();
           }}
         />
       )}

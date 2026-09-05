@@ -33,6 +33,20 @@ expect("skip-count list not misread", extractResults("8, 16, 24, 32").length, 0)
 expect("rung verified", checkRung("12 × 5 = ?", 60).status, "verified");
 expect("rung failed", checkRung("12 × 5 = ?", 61).status, "failed");
 expect("rung unverified", checkRung("How many bottom beads for 3?", 3).status, "unverified");
+// Regression: a parenthetical hint elsewhere in the question must NOT be able
+// to "verify" a wrong claimed answer. The expression before the '?' is authoritative.
+expect(
+  "hint elsewhere cannot verify a wrong rung",
+  checkRung("12 × 5 = ? (Remember: 5 + 5 = 10)", 10).status,
+  "failed"
+);
+expect(
+  "hint elsewhere does not break a right rung",
+  checkRung("12 × 5 = ? (Remember: 5 + 5 = 10)", 60).status,
+  "verified"
+);
+expect("word pattern still verifies", checkRung("How many groups of 6 fit in 24?", 4).status, "verified");
+expect("A × ? = B still verifies", checkRung("So 8 × ? = 72", 9).status, "verified");
 
 // ---- readingLevel ----
 expect("short sentence ok", readingLevel("This is short.").ok, true);

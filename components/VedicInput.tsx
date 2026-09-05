@@ -67,7 +67,7 @@ export function VedicInput({
               <b className="text-fuchsia-700">{(100 - a) * (100 - b)}</b> (last digits)
             </div>
             <div className="pt-1 text-gray-500 italic">
-              Stick them together — that's your answer.
+              Stick them together — that&apos;s your answer.
             </div>
           </div>
         </div>
